@@ -1,6 +1,7 @@
 package saka1029.qstack;
 
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 public interface List extends Element, Iterable<Element> {
@@ -16,6 +17,19 @@ public interface List extends Element, Iterable<Element> {
         List result = NIL;
         for (int i = es.length - 1; i >= 0; --i)
             result = Pair.of(es[i], result);
+        return result;
+    }
+
+    public static List of(java.util.List<Element> elements, Element tail) {
+        ListIterator<Element> i = elements.listIterator(elements.size());
+        if (!i.hasPrevious())
+            if (tail == NIL)
+                return NIL;
+            else
+                throw new IllegalArgumentException("Empty elements");
+        Pair result = Pair.of(i.previous(), tail);
+        while (i.hasPrevious())
+            result = Pair.of(i.previous(), result);
         return result;
     }
 
