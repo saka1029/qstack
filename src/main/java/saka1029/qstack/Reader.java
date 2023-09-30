@@ -1,6 +1,7 @@
 package saka1029.qstack;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.regex.Pattern;
 
 public class Reader {
@@ -17,6 +18,10 @@ public class Reader {
 
     public static Reader of(Context context, java.io.Reader reader) {
         return new Reader(context, reader);
+    }
+
+    public static Reader of(Context context, String source) {
+        return new Reader(context, new StringReader(source));
     }
 
     int get() {
