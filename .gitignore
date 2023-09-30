@@ -1,0 +1,9 @@
+/target/
+/debug/
+/.settings/
+/.classpath
+/.project
+*.lck
+*.log
+.~lock*
+/bin/
