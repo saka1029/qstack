@@ -26,5 +26,29 @@ public class TestReader {
         assertEquals(List.of(Int.ONE, Int.of(-2), Reference.of("drop")), reader.read());
         assertNull(reader.read());
     }
+    
+    @Test
+    public void testReadPair() {
+        Context c = Context.of(10);
+        Reader reader = Reader.of(c, new StringReader("  (1 . -2) "));
+        assertEquals(Pair.of(Int.ONE, Int.of(-2)), reader.read());
+        assertNull(reader.read());
+    }
+    
+    @Test
+    public void testReadQuote() {
+        Context c = Context.of(10);
+        Reader reader = Reader.of(c, new StringReader("  '1 "));
+        assertEquals(Quote.of(Int.ONE), reader.read());
+        assertNull(reader.read());
+    }
+    
+    @Test
+    public void testReadQuoteList() {
+        Context c = Context.of(10);
+        Reader reader = Reader.of(c, new StringReader("  ' (1 2  ) "));
+        assertEquals(Quote.of(List.of(Int.ONE, Int.TWO)), reader.read());
+        assertNull(reader.read());
+    }
 
 }
