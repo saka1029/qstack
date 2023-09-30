@@ -75,7 +75,7 @@ public class Reader {
 
     static boolean isWord(int ch) {
         return switch (ch) {
-            case '(', ')', '\'', -1 -> false;
+            case '(', ')', '.', '\'', -1 -> false;
             default -> !Character.isWhitespace(ch);
         };
     }
