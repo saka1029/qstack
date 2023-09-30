@@ -3,8 +3,6 @@ package saka1029.qstack;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import java.io.StringReader;
-
 import org.junit.Test;
 
 public class TestReader {
@@ -15,7 +13,7 @@ public class TestReader {
         Reader reader = Reader.of(c, "  1 -2   drop ");
         assertEquals(Int.ONE, reader.read());
         assertEquals(Int.of(-2), reader.read());
-        assertEquals(Reference.of("drop"), reader.read());
+        assertEquals(Symbol.of("drop"), reader.read());
         assertNull(reader.read());
     }
     
@@ -23,7 +21,7 @@ public class TestReader {
     public void testReadList() {
         Context c = Context.of(10);
         Reader reader = Reader.of(c, "  (1 -2   drop) ");
-        assertEquals(List.of(Int.ONE, Int.of(-2), Reference.of("drop")), reader.read());
+        assertEquals(List.of(Int.ONE, Int.of(-2), Symbol.of("drop")), reader.read());
         assertNull(reader.read());
     }
     

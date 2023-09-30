@@ -90,7 +90,7 @@ public class Reader {
         if (INT_PAT.matcher(word).matches())
             return Int.of(Integer.parseInt(word));
         else
-            return Reference.of(word);
+            return Symbol.of(word);
     }
 
     public Element read() {

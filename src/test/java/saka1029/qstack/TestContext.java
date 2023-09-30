@@ -1,6 +1,6 @@
 package saka1029.qstack;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
@@ -34,15 +34,15 @@ public class TestContext {
         c.execute(Quote.of(List.of(Int.ONE, Int.TWO)));
         assertEquals(1, c.sp);
         assertEquals(List.of(Int.ONE, Int.TWO), c.pop());
-        c.execute(Quote.of(Context.DROP));
-        assertEquals(Context.DROP, c.pop());
+        c.execute(Quote.of(Symbol.of("drop")));
+        assertEquals(Symbol.of("drop"), c.pop());
     }
     
     @Test
     public void testDup() {
         Context c = Context.of(10);
         c.execute(Int.ONE);
-        c.execute(Context.DUP);
+        c.execute("dup");
         assertEquals(2, c.sp);
         assertEquals(Int.ONE, c.pop());
         assertEquals(Int.ONE, c.pop());
@@ -52,7 +52,7 @@ public class TestContext {
     public void testDrop() {
         Context c = Context.of(10);
         c.execute(Int.ONE);
-        c.execute(Context.DROP);
+        c.execute("drop");
         assertEquals(0, c.sp);
     }
     
@@ -60,7 +60,7 @@ public class TestContext {
     public void testExecute() {
         Context c = Context.of(10);
         c.execute(Quote.of(List.of(Int.ONE, Int.TWO)));
-        c.execute(Context.EXECUTE);
+        c.execute("execute");
         assertEquals(2, c.sp);
         assertEquals(Int.TWO, c.pop());
         assertEquals(Int.ONE, c.pop());
@@ -72,29 +72,29 @@ public class TestContext {
         c.execute(Bool.TRUE);
         c.execute(Int.ONE);
         c.execute(Int.TWO);
-        c.execute(Context.IF);
+        c.execute("if");
         assertEquals(1, c.sp);
         assertEquals(Int.ONE, c.pop());
         c.execute(Bool.FALSE);
         c.execute(Int.ONE);
         c.execute(Int.TWO);
-        c.execute(Context.IF);
+        c.execute("if");
         assertEquals(1, c.sp);
         assertEquals(Int.TWO, c.pop());
         c.execute(Int.ONE);
         c.execute(Int.TWO);
         c.execute(Bool.TRUE);
-        c.execute(Quote.of(Context.PLUS));
-        c.execute(Quote.of(Context.MINUS));
-        c.execute(Context.IF);
+        c.execute(Quote.of(Symbol.of("+")));
+        c.execute(Quote.of(Symbol.of("-")));
+        c.execute("if");
         assertEquals(1, c.sp);
         assertEquals(Int.THREE, c.pop());
         c.execute(Int.ONE);
         c.execute(Int.TWO);
         c.execute(Bool.FALSE);
-        c.execute(Quote.of(Context.PLUS));
-        c.execute(Quote.of(Context.MINUS));
-        c.execute(Context.IF);
+        c.execute(Quote.of(Symbol.of("+")));
+        c.execute(Quote.of(Symbol.of("-")));
+        c.execute("if");
         assertEquals(1, c.sp);
         assertEquals(Int.of(-1), c.pop());
     }
