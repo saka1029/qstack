@@ -29,5 +29,26 @@ public class TestQstack {
         assertEquals(c.eval("24"), c.eval("4 !"));
         assertEquals(c.eval("120"), c.eval("5 !"));
     }
+    
+    /**
+     * '(1 2) '(3 4) append
+     * (1 2) (3 4) : swap
+     * (3 4) (1 2) : uncons
+     * (3 4) 1 (2) : rot
+     * 1 (2) (3 4) : append
+     * 1 (2 3 4) : cons
+     * (1 2 3 4)
+     */
+    @Test
+    public void testAppend() {
+        Context c = Context.of(10);
+        c.run("'(swap @0 '() == '(drop) '(uncons rot append cons) if) 'append define");
+//        c.run("/append (swap dup () == (drop) (unpair rot append pair) if) define");
+        assertEquals(c.eval("'(1 2 3 4)"), c.eval("'() '(1 2 3 4) append"));
+        assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(1) '(2 3 4) append"));
+        assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(1 2) '(3 4) append"));
+        assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(1 2 3) '(4) append"));
+        
+    }
 
 }

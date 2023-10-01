@@ -7,6 +7,13 @@ import org.junit.Test;
 public class TestContext {
 
     @Test
+    public void testEQ() {
+        Context c = Context.of(10);
+        assertEquals(List.NIL, c.eval("'()"));
+        assertEquals(c.eval("'()"), c.eval("'()"));
+    }
+
+    @Test
     public void testPush() {
         Context c = Context.of(10);
         c.execute(Int.ONE);
@@ -54,6 +61,19 @@ public class TestContext {
         c.execute(Int.ONE);
         c.execute("drop");
         assertEquals(0, c.sp);
+    }
+    
+    @Test
+    public void testRot() {
+        Context c = Context.of(10);
+        c.execute(Int.ONE);
+        c.execute(Int.TWO);
+        c.execute(Int.THREE);
+        c.execute("rot");
+        assertEquals(3, c.sp);
+        assertEquals(Int.ONE, c.pop());
+        assertEquals(Int.THREE, c.pop());
+        assertEquals(Int.TWO, c.pop());
     }
     
     @Test

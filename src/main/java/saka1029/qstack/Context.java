@@ -2,10 +2,15 @@ package saka1029.qstack;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import saka1029.Common;
+
 public class Context {
+    
+    static final Logger logger = Common.logger(Context.class);
 
     public final Element[] stack;
     public int sp = 0;
@@ -42,6 +47,17 @@ public class Context {
 
     public void dup(int index) {
         push(stack[sp - index - 1]);
+    }
+    
+    /**
+     * a b c rot -> b c a
+     */
+    public void rot() {
+        logger.info(this + " rot");
+        Element temp = stack[sp - 3];
+        stack[sp - 3] = stack[sp - 2];
+        stack[sp - 2] = stack[sp - 1];
+        stack[sp - 1] = temp;
     }
     
     public void swap() {
@@ -104,10 +120,15 @@ public class Context {
         add("^4", c -> c.exit(4));
         add("drop", c -> c.drop());
         add("swap", c -> c.swap());
+        add("rot", c -> c.rot());
         add("execute", c -> c.execute(c.pop()));
         add("true", Bool.TRUE);
         add("false", Bool.FALSE);
-        add("==", c -> { Element r = c.pop(), l = c.pop(); c.push(Bool.of(l.equals(r))); });
+        add("==", c -> { Element r = c.pop(), l = c.pop();
+            Bool b = Bool.of(l.equals(r));
+            logger.info(l + " " + r + " == : " + b);
+            c.push(b); });
+//            c.push(Bool.of(l.equals(r))); });
         add("!=", c -> { Element r = c.pop(), l = c.pop(); c.push(Bool.of(!l.equals(r))); });
         add("<", c -> { Ordered r = (Ordered)c.pop(), l = (Ordered)c.pop(); c.push(Bool.of(l.compareTo(r) < 0)); });
         add("<=", c -> { Ordered r = (Ordered)c.pop(), l = (Ordered)c.pop(); c.push(Bool.of(l.compareTo(r) <= 0)); });
@@ -119,7 +140,7 @@ public class Context {
         add("car", c -> c.push(((Cons)c.pop()).car));
         add("cdr", c -> c.push(((Cons)c.pop()).cdr));
         add("cons", c -> { Element r = c.pop(), l = c.pop(); c.push(Cons.of(l, r)); });
-        add("unpair", c -> { Cons e = (Cons)c.pop(); c.push(e.car); c.push(e.cdr); });
+        add("uncons", c -> { Cons e = (Cons)c.pop(); c.push(e.car); c.push(e.cdr); });
         add("if", c -> {
             Element orElse = c.pop(), then = c.pop();
             execute(((Bool)c.pop()).value ? then : orElse);
