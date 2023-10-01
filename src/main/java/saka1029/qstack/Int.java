@@ -1,6 +1,6 @@
 package saka1029.qstack;
 
-public class Int implements Value {
+public class Int implements Ordered {
     
     public static final Int ZERO = Int.of(0);
     public static final Int ONE = Int.of(1);
@@ -30,5 +30,10 @@ public class Int implements Value {
     @Override
     public String toString() {
         return "" + value;
+    }
+    
+    @Override
+    public int compareTo(Ordered o) {
+        return Integer.compare(value, ((Int)o).value);
     }
 }

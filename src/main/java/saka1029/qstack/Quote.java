@@ -19,7 +19,7 @@ public class Quote implements Value {
 
     @Override
     public int hashCode() {
-        return value.hashCode() + 13;
+        return value.hashCode();
     }
     
     @Override

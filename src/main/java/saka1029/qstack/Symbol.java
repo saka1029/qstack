@@ -2,6 +2,7 @@ package saka1029.qstack;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Symbol implements Element {
 	
@@ -18,7 +19,9 @@ public class Symbol implements Element {
 	
 	@Override
 	public void execute(Context c) {
-		c.execute(c.globals.get(this));
+	    Element value = c.globals.get(this);
+	    Objects.requireNonNull(value, "symbol '%s' undefined".formatted(this));
+		c.execute(value);
 	}
 
 	@Override

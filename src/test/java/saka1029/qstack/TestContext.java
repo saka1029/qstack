@@ -108,5 +108,10 @@ public class TestContext {
         assertEquals(Int.of(-1), c.eval(" (1  (1 1 +) -) "));
         assertEquals(Symbol.of("abc"), c.eval(" 'abc "));
         assertEquals(List.of(Symbol.of("a"), Int.ONE), c.eval(" '(a 1) "));
+        assertEquals(Int.of(1), c.eval("true 1  2 if"));
+        assertEquals(Int.of(2), c.eval("false 1  2 if"));
+        assertEquals(Int.of(1), c.eval("true '1  '2 if"));
+        assertEquals(Int.of(1), c.eval("1 2 < '(0 1 +) '(1 2 +) if"));
+        assertEquals(Int.of(3), c.eval("2 1 < '(0 1 +) '(1 2 +) if"));
     }
 }
