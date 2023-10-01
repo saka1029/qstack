@@ -136,6 +136,7 @@ public class Context {
         add("cdr", c -> c.push(((Cons)c.pop()).cdr));
         add("cons", c -> { Element r = c.pop(), l = c.pop(); c.push(Cons.of(l, r)); });
         add("uncons", c -> { Cons e = (Cons)c.pop(); c.push(e.car); c.push(e.cdr); });
+        add("null?", c -> c.push(Bool.of(c.pop().equals(List.NIL))));
         add("if", c -> {
             Element orElse = c.pop(), then = c.pop();
             execute(((Bool)c.pop()).value ? then : orElse);

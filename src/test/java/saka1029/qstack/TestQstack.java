@@ -42,7 +42,7 @@ public class TestQstack {
     @Test
     public void testAppend() {
         Context c = Context.of(10);
-        c.run("'(swap @0 '() == '(drop) '(uncons rot append cons) if) 'append define");
+        c.run("'(swap @0 null? '(drop) '(uncons rot append cons) if) 'append define");
         assertEquals(c.eval("'(1 2 3 4)"), c.eval("'() '(1 2 3 4) append"));
         assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(1) '(2 3 4) append"));
         assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(1 2) '(3 4) append"));
@@ -73,8 +73,30 @@ public class TestQstack {
     @Test
     public void testReverseRecursive() {
         Context c = Context.of(10);
-        c.run("'(@0 '() == '(drop) '(uncons rot rot swap cons swap reverse2) if)  'reverse2 define");
+        c.run("'(@0 null? '(drop) '(uncons rot rot swap cons swap reverse2) if)  'reverse2 define");
         c.run("'('() swap reverse2) 'reverse define");
+        assertEquals(c.eval("'()"), c.eval("'() reverse"));
+        assertEquals(c.eval("'(1)"), c.eval("'(1) reverse"));
+        assertEquals(c.eval("'(2 1)"), c.eval("'(1 2) reverse"));
+        assertEquals(c.eval("'(4 3 2 1)"), c.eval("'(1 2 3 4) reverse"));
+    }
+
+    /**
+     * (1 2 3) reverse
+     * (1 2 3) : uncons
+     * 1 (2 3) : reverse
+     * 1 (3 2) : swap
+     * (3 2) 1 : '()
+     * (3 2) 1 () : cons
+     * (3 2) (1) : append
+     * (3 2 1)
+     * 
+     */
+    @Test
+    public void testReverseByAppend() {
+        Context c = Context.of(10);
+        c.run("'(swap @0 null? '(drop) '(uncons rot append cons) if) 'append define");
+        c.run("'(@0 null? '() '(uncons reverse swap '() cons append) if) 'reverse define");
         assertEquals(c.eval("'()"), c.eval("'() reverse"));
         assertEquals(c.eval("'(1)"), c.eval("'(1) reverse"));
         assertEquals(c.eval("'(2 1)"), c.eval("'(1 2) reverse"));
