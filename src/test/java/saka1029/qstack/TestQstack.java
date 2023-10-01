@@ -53,6 +53,31 @@ public class TestQstack {
     public void testReverseByForeach() {
         Context c = Context.of(10);
         c.run("'('() swap '(swap cons) foreach) 'reverse define");
+        assertEquals(c.eval("'()"), c.eval("'() reverse"));
+        assertEquals(c.eval("'(1)"), c.eval("'(1) reverse"));
+        assertEquals(c.eval("'(2 1)"), c.eval("'(1 2) reverse"));
+        assertEquals(c.eval("'(4 3 2 1)"), c.eval("'(1 2 3 4) reverse"));
+    }
+    
+    /**
+     * () (1 2 3) reverse2
+     * () (1 2 3) : uncons
+     * () 1 (2 3) : rot
+     * 1 (2 3) () : rot
+     * (2 3) () 1 : swap
+     * (2 3) 1 () : cons
+     * (2 3) (1) : swap
+     * (1) (2 3) : reverse2
+     * (1 2 3)
+     */
+    @Test
+    public void testReverseRecursive() {
+        Context c = Context.of(10);
+        c.run("'(@0 '() == '(drop) '(uncons rot rot swap cons swap reverse2) if)  'reverse2 define");
+        c.run("'('() swap reverse2) 'reverse define");
+        assertEquals(c.eval("'()"), c.eval("'() reverse"));
+        assertEquals(c.eval("'(1)"), c.eval("'(1) reverse"));
+        assertEquals(c.eval("'(2 1)"), c.eval("'(1 2) reverse"));
         assertEquals(c.eval("'(4 3 2 1)"), c.eval("'(1 2 3 4) reverse"));
     }
 

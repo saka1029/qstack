@@ -53,7 +53,6 @@ public class Context {
      * a b c rot -> b c a
      */
     public void rot() {
-        logger.info(this + " rot");
         Element temp = stack[sp - 3];
         stack[sp - 3] = stack[sp - 2];
         stack[sp - 2] = stack[sp - 1];
@@ -124,11 +123,7 @@ public class Context {
         add("execute", c -> c.execute(c.pop()));
         add("true", Bool.TRUE);
         add("false", Bool.FALSE);
-        add("==", c -> { Element r = c.pop(), l = c.pop();
-            Bool b = Bool.of(l.equals(r));
-            logger.info(l + " " + r + " == : " + b);
-            c.push(b); });
-//            c.push(Bool.of(l.equals(r))); });
+        add("==", c -> { Element r = c.pop(), l = c.pop(); c.push(Bool.of(l.equals(r))); });
         add("!=", c -> { Element r = c.pop(), l = c.pop(); c.push(Bool.of(!l.equals(r))); });
         add("<", c -> { Ordered r = (Ordered)c.pop(), l = (Ordered)c.pop(); c.push(Bool.of(l.compareTo(r) < 0)); });
         add("<=", c -> { Ordered r = (Ordered)c.pop(), l = (Ordered)c.pop(); c.push(Bool.of(l.compareTo(r) <= 0)); });
