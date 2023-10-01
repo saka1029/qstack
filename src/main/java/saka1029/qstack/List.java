@@ -16,7 +16,7 @@ public interface List extends Element, Iterable<Element> {
     public static List of(Element... es) {
         List result = NIL;
         for (int i = es.length - 1; i >= 0; --i)
-            result = Pair.of(es[i], result);
+            result = Cons.of(es[i], result);
         return result;
     }
 
@@ -27,9 +27,9 @@ public interface List extends Element, Iterable<Element> {
                 return NIL;
             else
                 throw new IllegalArgumentException("Empty elements");
-        Pair result = Pair.of(i.previous(), tail);
+        Cons result = Cons.of(i.previous(), tail);
         while (i.hasPrevious())
-            result = Pair.of(i.previous(), result);
+            result = Cons.of(i.previous(), result);
         return result;
     }
 
@@ -47,15 +47,15 @@ public interface List extends Element, Iterable<Element> {
 
             @Override
             public boolean hasNext() {
-                return next instanceof Pair;
+                return next instanceof Cons;
             }
 
             @Override
             public Element next() {
-                if (!(next instanceof Pair p))
+                if (!(next instanceof Cons p))
                     throw new NoSuchElementException();
-                Element result = p.head;
-                next = p.tail;
+                Element result = p.car;
+                next = p.cdr;
                 return result;
             }
         };

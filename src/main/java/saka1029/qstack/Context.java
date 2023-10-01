@@ -44,6 +44,12 @@ public class Context {
         push(stack[sp - index - 1]);
     }
     
+    public void swap() {
+        Element temp = stack[sp - 1];
+        stack[sp - 1] = stack[sp - 2];
+        stack[sp - 2] = temp;
+    }
+    
     public void drop() {
         --sp;
     }
@@ -97,6 +103,7 @@ public class Context {
         add("^3", c -> c.exit(3));
         add("^4", c -> c.exit(4));
         add("drop", c -> c.drop());
+        add("swap", c -> c.swap());
         add("execute", c -> c.execute(c.pop()));
         add("true", Bool.TRUE);
         add("false", Bool.FALSE);
@@ -109,6 +116,10 @@ public class Context {
         add("+", c -> { Int r = (Int)c.pop(), l = (Int)c.pop(); c.push(Int.of(l.value + r.value)); });
         add("-", c -> { Int r = (Int)c.pop(), l = (Int)c.pop(); c.push(Int.of(l.value - r.value)); });
         add("*", c -> { Int r = (Int)c.pop(), l = (Int)c.pop(); c.push(Int.of(l.value * r.value)); });
+        add("car", c -> c.push(((Cons)c.pop()).car));
+        add("cdr", c -> c.push(((Cons)c.pop()).cdr));
+        add("cons", c -> { Element r = c.pop(), l = c.pop(); c.push(Cons.of(l, r)); });
+        add("unpair", c -> { Cons e = (Cons)c.pop(); c.push(e.car); c.push(e.cdr); });
         add("if", c -> {
             Element orElse = c.pop(), then = c.pop();
             execute(((Bool)c.pop()).value ? then : orElse);
@@ -117,6 +128,22 @@ public class Context {
             Symbol name = (Symbol)c.pop();
             Element value = c.pop();
             globals.put(name, value);
+        });
+        add("for", c -> {
+            Element closure = c.pop();
+            int step = ((Int)c.pop()).value, end = ((Int)c.pop()).value, start = ((Int)c.pop()).value;
+            if (step == 0)
+                throw new RuntimeException("step == 0");
+            else if (step > 0)
+                for (int i = start; i <= end; i += step) {
+                    c.push(Int.of(i));
+                    c.execute(closure);
+                }
+            else
+                for (int i = start; i >= end; i += step) {
+                    c.push(Int.of(i));
+                    c.execute(closure);
+                }
         });
     }
 

@@ -18,4 +18,16 @@ public class TestQstack {
         assertEquals(c.eval("120"), c.eval("5 !"));
     }
 
+    @Test
+    public void testFactByFor() {
+        Context c = Context.of(10);
+        c.run("'(1 swap 1 swap 1 '* for) '! define");
+        assertEquals(c.eval("1"), c.eval("0 !"));
+        assertEquals(c.eval("1"), c.eval("1 !"));
+        assertEquals(c.eval("2"), c.eval("2 !"));
+        assertEquals(c.eval("6"), c.eval("3 !"));
+        assertEquals(c.eval("24"), c.eval("4 !"));
+        assertEquals(c.eval("120"), c.eval("5 !"));
+    }
+
 }

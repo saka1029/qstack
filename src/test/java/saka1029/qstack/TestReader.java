@@ -26,7 +26,7 @@ public class TestReader {
     @Test
     public void testReadPair() {
         Reader reader = Reader.of("  (1 . -2) ");
-        assertEquals(Pair.of(Int.ONE, Int.of(-2)), reader.read());
+        assertEquals(Cons.of(Int.ONE, Int.of(-2)), reader.read());
         assertNull(reader.read());
     }
     
