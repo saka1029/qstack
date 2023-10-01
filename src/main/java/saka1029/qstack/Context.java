@@ -48,6 +48,15 @@ public class Context {
         --sp;
     }
     
+    /**
+     * スタックトップを残して、n個の要素をドロップする。
+     * [1 2 3 4] : exit(2) -> [1 4]
+     */
+    public void exit(int n) {
+        stack[sp - n - 1] = stack[sp - 1];
+        sp -= n;
+    }
+
     public void run(String source) {
         Reader reader = Reader.of(source);
         Element e;
@@ -77,11 +86,16 @@ public class Context {
     }
 
     void standard() {
-        add("dup", c -> c.dup(0));
+//        add("dup", c -> c.dup(0));
         add("@0", c -> c.dup(0));
         add("@1", c -> c.dup(1));
         add("@2", c -> c.dup(2));
         add("@3", c -> c.dup(3));
+        add("@4", c -> c.dup(4));
+        add("^1", c -> c.exit(1));
+        add("^2", c -> c.exit(2));
+        add("^3", c -> c.exit(3));
+        add("^4", c -> c.exit(4));
         add("drop", c -> c.drop());
         add("execute", c -> c.execute(c.pop()));
         add("true", Bool.TRUE);
@@ -100,8 +114,8 @@ public class Context {
             execute(((Bool)c.pop()).value ? then : orElse);
         });
         add("define", c -> {
-            Element value = c.pop();
             Symbol name = (Symbol)c.pop();
+            Element value = c.pop();
             globals.put(name, value);
         });
     }

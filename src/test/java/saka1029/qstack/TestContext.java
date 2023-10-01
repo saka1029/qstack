@@ -42,7 +42,7 @@ public class TestContext {
     public void testDup() {
         Context c = Context.of(10);
         c.execute(Int.ONE);
-        c.execute("dup");
+        c.execute("@0");
         assertEquals(2, c.sp);
         assertEquals(Int.ONE, c.pop());
         assertEquals(Int.ONE, c.pop());
@@ -54,6 +54,15 @@ public class TestContext {
         c.execute(Int.ONE);
         c.execute("drop");
         assertEquals(0, c.sp);
+    }
+    
+    @Test
+    public void testExit() {
+        Context c = Context.of(10);
+        c.run("1 2 3 4");
+        c.execute("^3");
+        assertEquals(1, c.sp);
+        assertEquals(Int.of(4), c.pop());
     }
     
     @Test
@@ -113,5 +122,14 @@ public class TestContext {
         assertEquals(Int.of(1), c.eval("true '1  '2 if"));
         assertEquals(Int.of(1), c.eval("1 2 < '(0 1 +) '(1 2 +) if"));
         assertEquals(Int.of(3), c.eval("2 1 < '(0 1 +) '(1 2 +) if"));
+    }
+    
+    @Test
+    public void testDefine() {
+        Context c = Context.of(10);
+        c.run("3 'みっつ define");
+        assertEquals(Int.THREE, c.eval("みっつ"));
+        c.run("'(1 +) 'inc define");
+        assertEquals(Int.of(4), c.eval("3 inc"));
     }
 }
