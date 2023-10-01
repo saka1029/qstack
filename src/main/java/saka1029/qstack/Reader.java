@@ -7,21 +7,19 @@ import java.util.regex.Pattern;
 public class Reader {
 
     final java.io.Reader reader;
-    final Context context;
     int ch;
 
-    Reader(Context context, java.io.Reader reader) {
-        this.context = context;
+    Reader(java.io.Reader reader) {
         this.reader = reader;
         get();
     }
 
-    public static Reader of(Context context, java.io.Reader reader) {
-        return new Reader(context, reader);
+    public static Reader of(java.io.Reader reader) {
+        return new Reader(reader);
     }
 
-    public static Reader of(Context context, String source) {
-        return new Reader(context, new StringReader(source));
+    public static Reader of(String source) {
+        return new Reader(new StringReader(source));
     }
 
     int get() {

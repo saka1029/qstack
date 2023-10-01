@@ -98,4 +98,15 @@ public class TestContext {
         assertEquals(1, c.sp);
         assertEquals(Int.of(-1), c.pop());
     }
+    
+    @Test
+    public void testEval() {
+        Context c = Context.of(10);
+        assertEquals(Int.ONE, c.eval(" 1 "));
+        assertEquals(Int.of(8), c.eval(" 1 3 + 2 * "));
+        assertEquals(Int.of(-1), c.eval(" (1  2 -) "));
+        assertEquals(Int.of(-1), c.eval(" (1  (1 1 +) -) "));
+        assertEquals(Symbol.of("abc"), c.eval(" 'abc "));
+        assertEquals(List.of(Symbol.of("a"), Int.ONE), c.eval(" '(a 1) "));
+    }
 }

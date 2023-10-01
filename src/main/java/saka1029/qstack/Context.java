@@ -48,6 +48,21 @@ public class Context {
         --sp;
     }
     
+    public void run(String source) {
+        Reader reader = Reader.of(source);
+        Element e;
+        while ((e = reader.read()) != null)
+            execute(e);
+    }
+    
+    public Element eval(String source) {
+        int baseSize = sp;
+        run(source);
+        int resultSize = sp - baseSize;
+        assert resultSize == 1 : "%s result(s)".formatted(resultSize);
+        return pop();
+    }
+    
     @Override
     public String toString() {
         return IntStream.range(0, sp)
@@ -75,6 +90,11 @@ public class Context {
         add("if", c -> {
             Element orElse = c.pop(), then = c.pop();
             execute(((Bool)c.pop()).value ? then : orElse);
+        });
+        add("define", c -> {
+            Element value = c.pop();
+            Symbol name = (Symbol)c.pop();
+            globals.put(name, value);
         });
     }
 
