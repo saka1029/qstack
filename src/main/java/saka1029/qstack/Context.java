@@ -150,6 +150,14 @@ public class Context {
             Element value = c.pop();
             globals.put(name, value);
         });
+        add("foreach", c -> {
+            Element clause = c.pop();
+            List list = (List)c.pop();
+            for (Element e : list) {
+                c.push(e);
+                c.execute(clause);
+            }
+        });
         add("for", c -> {
             Element closure = c.pop();
             int step = ((Int)c.pop()).value, end = ((Int)c.pop()).value, start = ((Int)c.pop()).value;

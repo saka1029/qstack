@@ -43,12 +43,17 @@ public class TestQstack {
     public void testAppend() {
         Context c = Context.of(10);
         c.run("'(swap @0 '() == '(drop) '(uncons rot append cons) if) 'append define");
-//        c.run("/append (swap dup () == (drop) (unpair rot append pair) if) define");
         assertEquals(c.eval("'(1 2 3 4)"), c.eval("'() '(1 2 3 4) append"));
         assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(1) '(2 3 4) append"));
         assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(1 2) '(3 4) append"));
         assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(1 2 3) '(4) append"));
-        
+    }
+    
+    @Test
+    public void testReverseByForeach() {
+        Context c = Context.of(10);
+        c.run("'('() swap '(swap cons) foreach) 'reverse define");
+        assertEquals(c.eval("'(4 3 2 1)"), c.eval("'(1 2 3 4) reverse"));
     }
 
 }
