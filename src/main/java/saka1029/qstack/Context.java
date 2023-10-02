@@ -132,6 +132,8 @@ public class Context {
         add("+", c -> { Int r = (Int)c.pop(), l = (Int)c.pop(); c.push(Int.of(l.value + r.value)); });
         add("-", c -> { Int r = (Int)c.pop(), l = (Int)c.pop(); c.push(Int.of(l.value - r.value)); });
         add("*", c -> { Int r = (Int)c.pop(), l = (Int)c.pop(); c.push(Int.of(l.value * r.value)); });
+        add("/", c -> { Int r = (Int)c.pop(), l = (Int)c.pop(); c.push(Int.of(l.value / r.value)); });
+        add("%", c -> { Int r = (Int)c.pop(), l = (Int)c.pop(); c.push(Int.of(l.value % r.value)); });
         add("car", c -> c.push(((Cons)c.pop()).car));
         add("cdr", c -> c.push(((Cons)c.pop()).cdr));
         add("cons", c -> { Element r = c.pop(), l = c.pop(); c.push(Cons.of(l, r)); });
