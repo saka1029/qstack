@@ -1,6 +1,6 @@
 package saka1029.qstack;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
@@ -155,14 +155,23 @@ public class TestQstack {
     @Test
     public void testFilterByForeachAndReverse() {
         Context c = Context.of(20);
-        c.run("'(2 % 0 ==) 'even define");
-        c.run("'(2 % 0 !=) 'odd define");
         c.run("'('() swap '(swap cons) foreach) 'reverse define");
         c.run("'(swap '() swap '(@0 @3 execute '(swap cons) '(drop) if) foreach ^1 reverse) 'filter define");
-        assertEquals(c.eval("true"), c.eval("0 even"));
-        assertEquals(c.eval("false"), c.eval("1 even"));
-        assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) 'even filter"));
-        assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) 'odd filter"));
+        assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
+        assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
+    }
+    
+    @Test
+    public void testCompound() {
+        Context c = Context.of(20);
+        assertEquals(c.eval("9"), c.eval("3 '@0 '* '() cons cons execute"));
+        assertEquals(c.eval("9"), c.eval("3 '(@0) '(*) cons execute"));
+        assertEquals(c.eval("9"), c.eval("3 '@0 '(*) cons execute"));
+        c.run("'@0 '* '() cons cons 'square define");
+        assertEquals(c.eval("9"), c.eval("3 square"));
+        c.run("'('() cons cons) 'compound define");
+        assertEquals(c.eval("9"), c.eval("3 '@0 '* compound execute"));
+        assertEquals(c.eval("9"), c.eval("2 '(1 +) '@0 '* compound compound stack execute"));
     }
 
 }

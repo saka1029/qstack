@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 public class Common {
 
-    static final Formatter MY_FORMATTER= new Formatter() {
+    static final Formatter MY_FORMATTER = new Formatter() {
         @Override public String format(LogRecord record){
             String loggerName=record.getLoggerName();
             return String.format("%1$tY-%1$tm-%1$td %1$tT.%1$tL %3$s %4$s: %5$s%6$s%n",

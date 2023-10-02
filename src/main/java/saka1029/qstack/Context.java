@@ -172,6 +172,7 @@ public class Context {
                     c.execute(closure);
                 }
         });
+        add("stack", c -> logger.info(c.toString()));
     }
 
 }
