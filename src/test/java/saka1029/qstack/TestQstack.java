@@ -102,5 +102,32 @@ public class TestQstack {
         assertEquals(c.eval("'(2 1)"), c.eval("'(1 2) reverse"));
         assertEquals(c.eval("'(4 3 2 1)"), c.eval("'(1 2 3 4) reverse"));
     }
+    
+    /**
+     * (0 1 2) (1 +) map
+     * (0 1 2) (1 +) : swap
+     * (1 +) (0 1 2)
+     * 
+     * (1 +) (0 1 2) : uncons
+     * (1 +) 0 (1 2) : swap
+     * (1 +) (1 2) 0 : @2
+     * (1 +) (1 2) 0 (1 +) : execute
+     * (1 +) (1 2) 1 : swap
+     * (1 +) 1 (1 2) : @2
+     * (1 +) 1 (1 2) (1 +) : map
+     * (1 +) 1 (2 3) : cons
+     * (1 +) (1 2 3) : ^1
+     * (1 2 3)
+     * 
+     */
+    @Test
+    public void testMapRecursive() {
+        Context c = Context.of(20);
+        c.run("'(swap @0 null? '() '(uncons swap @2 execute swap @2 map cons) if ^1) 'map define");
+        assertEquals(c.eval("'()"), c.eval("'() '(1 +) map"));
+        assertEquals(c.eval("'(1)"), c.eval("'(0) '(1 +) map"));
+        assertEquals(c.eval("'(1 2 3)"), c.eval("'(0 1 2) '(1 +) map"));
+        assertEquals(c.eval("'(1 2 3 4 5)"), c.eval("'(0 1 2 3 4) '(1 +) map"));
+    }
 
 }
