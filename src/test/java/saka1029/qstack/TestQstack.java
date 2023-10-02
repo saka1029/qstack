@@ -134,10 +134,20 @@ public class TestQstack {
      * cdr部分の再起を先に実行する。リストの後ろからフィルターする。
      */
     @Test
-    public void testFilterRecursive() {
+    public void testFilterRecursiveFromLast() {
         Context c = Context.of(20);
-        c.run("'(2 % 0 ==) 'even define");
-        c.run("'(swap @0 null? '() '(uncons @2 filter swap @0 @3 execute '(swap cons) '(drop) if) if swap drop) 'filter define");
+        c.run("'(swap @0 null? '() '(uncons @2 filter swap @0 @3 execute '(swap cons) '(drop) if) if ^1) 'filter define");
+        assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
+        assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
+    }
+    
+    /**
+     * リストの先頭からフィルターする。
+     */
+    @Test
+    public void testFilterRecursiveFromFirst() {
+        Context c = Context.of(20);
+        c.run("'(swap @0 null? '() '(uncons swap @0 @3 execute rot @3 filter swap '(cons) '(swap drop) if) if ^1) 'filter define");
         assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
         assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
     }
