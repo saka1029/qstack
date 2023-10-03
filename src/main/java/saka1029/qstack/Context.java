@@ -174,6 +174,8 @@ public class Context {
                 }
         });
         add("stack", c -> logger.info(c.toString()));
+        add("print", c -> System.out.print(c.pop()));
+        add("println", c -> System.out.println(c.pop()));
     }
 
 }

@@ -152,4 +152,10 @@ public class TestContext {
         c.run("'(1 +) 'inc define");
         assertEquals(Int.of(4), c.eval("3 inc"));
     }
+    
+    @Test
+    public void testPrint() {
+        Context c = Context.of(10);
+        c.run("1 2 3 '𩸽 stack println print stack");
+    }
 }
