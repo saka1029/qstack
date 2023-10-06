@@ -2,10 +2,16 @@ package saka1029.qstack;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.logging.Logger;
+
 import org.junit.Test;
+
+import saka1029.Common;
 
 public class TestQstack {
 
+    static final Logger logger = Common.logger(TestQstack.class);
+        
     @Test
     public void testFactRecursive() {
         Context c = Context.of(10);
@@ -62,8 +68,7 @@ public class TestQstack {
     /**
      * () (1 2 3) reverse2
      * () (1 2 3) : uncons
-     * () 1 (2 3) : rot
-     * 1 (2 3) () : rot
+     * () 1 (2 3) : rrot
      * (2 3) () 1 : swap
      * (2 3) 1 () : cons
      * (2 3) (1) : swap
@@ -73,7 +78,7 @@ public class TestQstack {
     @Test
     public void testReverseRecursive() {
         Context c = Context.of(10);
-        c.run("'(@0 null? '(drop) '(uncons rot rot swap cons swap reverse2) if)  'reverse2 define");
+        c.run("'(@0 null? '(drop) '(uncons rrot swap cons swap reverse2) if)  'reverse2 define");
         c.run("'('() swap reverse2) 'reverse define");
         assertEquals(c.eval("'()"), c.eval("'() reverse"));
         assertEquals(c.eval("'(1)"), c.eval("'(1) reverse"));
@@ -161,6 +166,32 @@ public class TestQstack {
         assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
     }
     
+    /**
+     * filter-predicateは述語(E->B)をフィルター用の述語に変換する高階関数。
+     * pred filter-predicate -> (@0 pred execute '(swap cons) '(drop) if)
+     * (0 1 2 3) filter-predicate : '()
+     * (0 1 2 3) filter-predicate '() : rot
+     * filter-predicate '() (0 1 2 3) : rot
+     * '() (0 1 2 3) filter-predicate : filter
+     * 
+     * Lispのようにバッククォートを使って
+     * `(a ,b c d e)
+     * をReaderが
+     * 'a b '(c d e) cons cons
+     * のように展開する方法も考えられる。
+     * ただし、b(unquote)を評価するときのスタックの状態があいまいになってしまう。
+     * この例の場合[prev1 prev0 a]のようになっており、bの前に何個要素がpushされているかわからない。
+     */
+    @Test
+    public void testFilterByCompound() {
+        Context c = Context.of(20).trace(logger::info);
+        c.run("'('() swap '(swap cons) foreach) 'reverse define");
+        c.run("'('(execute '(swap cons) '(drop) if) cons '@0 swap cons) 'filter-predicate define");
+        c.run("'(filter-predicate '() rrot foreach reverse) 'filter define");
+        assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
+        assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
+    }
+    
     @Test
     public void testCompound() {
         Context c = Context.of(20);
@@ -178,5 +209,16 @@ public class TestQstack {
         c.run("'inc '@0 '* compound compound '1+^2 stack define");
         assertEquals(c.eval("9"), c.eval("2 1+^2 execute"));
     }
-
+    
+    /**
+     * Joy言語のprimrec
+     * 以下は5の階乗を計算する。
+     * 5 1 '* primrec
+     */
+    @Test
+    public void testPrimrec() {
+        Context c = Context.of(100).trace(logger::info);
+        c.run("'(@2 0 <= '(@1 ^3) '(@2 1 - @2 @2 primrec swap rot drop execute) if) 'primrec define");
+        assertEquals(c.eval("120"), c.eval("5 1 '* primrec"));
+    }
 }

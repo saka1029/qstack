@@ -2,9 +2,15 @@ package saka1029.qstack;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.logging.Logger;
+
 import org.junit.Test;
 
+import saka1029.Common;
+
 public class TestContext {
+    
+    static final Logger logger = Common.logger(TestContext.class);
 
     @Test
     public void testEQ() {
@@ -155,7 +161,7 @@ public class TestContext {
     
     @Test
     public void testPrint() {
-        Context c = Context.of(10);
+        Context c = Context.of(10).output(System.out::print).trace(logger::info);
         c.run("1 2 3 '𩸽 stack println print stack");
     }
 }

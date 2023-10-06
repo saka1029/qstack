@@ -2,6 +2,7 @@ package saka1029.qstack;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -15,18 +16,46 @@ public class Context {
     public final Element[] stack;
     public int sp = 0;
     public final Map<Symbol, Element> globals = new HashMap<>();
+    public Consumer<String> output = null;
+    public Consumer<String> trace = null;
+    public int nest = 0;
 
     Context(int stackSize) {
         this.stack = new Element[stackSize];
         standard();
     }
-
+    
     public static Context of(int stackSize) {
         return new Context(stackSize);
     }
+    
+    public Context trace(Consumer<String> trace) {
+        this.trace = trace;
+        return this;
+    }
+    
+    public void trace(String text) {
+        if (trace != null)
+            trace.accept(text);
+    }
+    
+    public Context output(Consumer<String> output) {
+        this.output = output;
+        return this;
+    }
+    
+    public void output(String text) {
+        if (output != null)
+            output.accept(text);
+    }
 
     public void execute(Element e) {
+        boolean t = e instanceof Symbol;
+        if (t)
+            trace("  ".repeat(nest++) + this + " " + e);
         e.execute(this);
+        if (t)
+            --nest;
     }
     
     public void execute(String name) {
@@ -57,6 +86,17 @@ public class Context {
         stack[sp - 3] = stack[sp - 2];
         stack[sp - 2] = stack[sp - 1];
         stack[sp - 1] = temp;
+    }
+    
+    /**
+     * rotの逆回転版
+     * a b c rrot -> c a b
+     */
+    public void rrot() {
+        Element temp = stack[sp - 1];
+        stack[sp - 1] = stack[sp - 2];
+        stack[sp - 2] = stack[sp - 3];
+        stack[sp - 3] = temp;
     }
     
     public void swap() {
@@ -90,7 +130,9 @@ public class Context {
         run(source);
         int resultSize = sp - baseSize;
         assert resultSize == 1 : "%s result(s)".formatted(resultSize);
-        return pop();
+        Element result = pop();
+        trace(result.toString());
+        return result;
     }
     
     @Override
@@ -120,6 +162,7 @@ public class Context {
         add("drop", c -> c.drop());
         add("swap", c -> c.swap());
         add("rot", c -> c.rot());
+        add("rrot", c -> c.rrot());
         add("execute", c -> c.execute(c.pop()));
         add("true", Bool.TRUE);
         add("false", Bool.FALSE);
@@ -138,6 +181,7 @@ public class Context {
         add("cdr", c -> c.push(((Cons)c.pop()).cdr));
         add("cons", c -> { Element r = c.pop(), l = c.pop(); c.push(Cons.of(l, r)); });
         add("uncons", c -> { Cons e = (Cons)c.pop(); c.push(e.car); c.push(e.cdr); });
+        add("quote", c -> c.push(Quote.of(c.pop())));
         add("null?", c -> c.push(Bool.of(c.pop().equals(List.NIL))));
         add("list?", c -> c.push(Bool.of(c.pop() instanceof List)));
         add("if", c -> {
@@ -173,9 +217,9 @@ public class Context {
                     c.execute(closure);
                 }
         });
-        add("stack", c -> logger.info(c.toString()));
-        add("print", c -> System.out.print(c.pop()));
-        add("println", c -> System.out.println(c.pop()));
+        add("stack", c -> output(c.toString()));
+        add("print", c -> output("" + c.pop()));
+        add("println", c -> output(c.pop() + System.lineSeparator()));
     }
 
 }
