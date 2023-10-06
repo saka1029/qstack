@@ -184,7 +184,7 @@ public class TestQstack {
      */
     @Test
     public void testFilterByCompound() {
-        Context c = Context.of(20).trace(logger::info);
+        Context c = Context.of(20); //.trace(logger::info);
         c.run("'('() swap '(swap cons) foreach) 'reverse define");
         c.run("'('(execute '(swap cons) '(drop) if) cons '@0 swap cons) 'filter-predicate define");
         c.run("'(filter-predicate '() rrot foreach reverse) 'filter define");
@@ -212,13 +212,39 @@ public class TestQstack {
     
     /**
      * Joy言語のprimrec
-     * 以下は5の階乗を計算する。
+     * 以下は5の階乗120を計算する。
      * 5 1 '* primrec
      */
     @Test
     public void testPrimrec() {
-        Context c = Context.of(100).trace(logger::info);
+        Context c = Context.of(100); // .trace(logger::info);
         c.run("'(@2 0 <= '(@1 ^3) '(@2 1 - @2 @2 primrec swap rot drop execute) if) 'primrec define");
         assertEquals(c.eval("120"), c.eval("5 1 '* primrec"));
+    }
+    
+    @Test
+    public void testIota() {
+        Context c = Context.of(10);
+        c.run("'('() swap 1 -1 '(swap cons) for) 'iota define");
+        assertEquals(c.eval("'(1 2 3 4)"), c.eval("4 iota"));
+        c.run("'(1 swap iota '* foreach) '! define");
+       assertEquals(c.eval("1"), c.eval("0 !")); 
+       assertEquals(c.eval("1"), c.eval("1 !")); 
+       assertEquals(c.eval("6"), c.eval("3 !")); 
+       assertEquals(c.eval("120"), c.eval("5 !")); 
+    }
+    
+    @Test
+    public void testFibonacci() {
+        Context c = Context.of(10);
+        c.run("'(0 swap 1 swap 1 swap 1 '(drop @1 @1 + rot drop) for drop) 'fibonacci define");
+        assertEquals(c.eval("0"), c.eval("0 fibonacci"));
+        assertEquals(c.eval("1"), c.eval("1 fibonacci"));
+        assertEquals(c.eval("1"), c.eval("2 fibonacci"));
+        assertEquals(c.eval("2"), c.eval("3 fibonacci"));
+        assertEquals(c.eval("3"), c.eval("4 fibonacci"));
+        assertEquals(c.eval("5"), c.eval("5 fibonacci"));
+        assertEquals(c.eval("8"), c.eval("6 fibonacci"));
+        assertEquals(c.eval("13"), c.eval("7 fibonacci"));
     }
 }
