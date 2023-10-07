@@ -235,7 +235,7 @@ public class TestQstack {
     }
     
     @Test
-    public void testFibonacci() {
+    public void testFibonacciByFor() {
         Context c = Context.of(10);
         c.run("'(0 swap 1 swap 1 swap 1 '(drop @1 @1 + rot drop) for drop) 'fibonacci define");
         assertEquals(c.eval("0"), c.eval("0 fibonacci"));
@@ -246,5 +246,56 @@ public class TestQstack {
         assertEquals(c.eval("5"), c.eval("5 fibonacci"));
         assertEquals(c.eval("8"), c.eval("6 fibonacci"));
         assertEquals(c.eval("13"), c.eval("7 fibonacci"));
+    }
+    
+    @Test
+    public void testFibonacciRecursive() {
+        Context c = Context.of(12);
+        c.run("'(@0 1 <= '() '(@0 2 - fibonacci swap 1 - fibonacci +) if) 'fibonacci define");
+        assertEquals(c.eval("0"), c.eval("0 fibonacci"));
+        assertEquals(c.eval("1"), c.eval("1 fibonacci"));
+        assertEquals(c.eval("1"), c.eval("2 fibonacci"));
+        assertEquals(c.eval("2"), c.eval("3 fibonacci"));
+        assertEquals(c.eval("3"), c.eval("4 fibonacci"));
+        assertEquals(c.eval("5"), c.eval("5 fibonacci"));
+        assertEquals(c.eval("8"), c.eval("6 fibonacci"));
+        assertEquals(c.eval("13"), c.eval("7 fibonacci"));
+        assertEquals(c.eval("21"), c.eval("8 fibonacci"));
+    }
+    
+    @Test
+    public void testAndOrNot() {
+        Context c = Context.of(10);
+        c.run("'('() '(drop false) if) '& define");
+        assertEquals(Bool.TRUE, c.eval("true true &"));
+        assertEquals(Bool.FALSE, c.eval("true false &"));
+        assertEquals(Bool.FALSE, c.eval("false true &"));
+        assertEquals(Bool.FALSE, c.eval("false false &"));
+        c.run("'('(drop true) '() if) '| define");
+        assertEquals(Bool.TRUE, c.eval("true true |"));
+        assertEquals(Bool.TRUE, c.eval("true false |"));
+        assertEquals(Bool.TRUE, c.eval("false true |"));
+        assertEquals(Bool.FALSE, c.eval("false false |"));
+        c.run("'('false 'true if) '! define");
+        assertEquals(Bool.FALSE, c.eval("true !"));
+        assertEquals(Bool.TRUE, c.eval("false !"));
+    }
+    
+    @Test
+    public void testCandCorCnot() {
+        Context c = Context.of(10);
+        c.run("'(swap execute 'execute '(drop false) if) '&& define");
+        assertEquals(Bool.TRUE, c.eval("'(0 0 ==) '(0 0 ==) &&"));
+        assertEquals(Bool.FALSE, c.eval("'(0 0 ==) '(0 1 ==) &&"));
+        assertEquals(Bool.FALSE, c.eval("'(0 1 ==) '(0 0 ==) &&"));
+        assertEquals(Bool.FALSE, c.eval("'(0 1 ==) '(0 1 ==) &&"));
+        c.run("'(swap execute '(drop true) 'execute if) '|| define");
+        assertEquals(Bool.TRUE, c.eval("'(0 0 ==) '(0 0 ==) ||"));
+        assertEquals(Bool.TRUE, c.eval("'(0 0 ==) '(0 1 ==) ||"));
+        assertEquals(Bool.TRUE, c.eval("'(0 1 ==) '(0 0 ==) ||"));
+        assertEquals(Bool.FALSE, c.eval("'(0 1 ==) '(0 1 ==) ||"));
+        c.run("'(execute 'false 'true if) '!! define");
+        assertEquals(Bool.FALSE, c.eval("'(0 0 ==) !!"));
+        assertEquals(Bool.TRUE, c.eval("'(0 1 ==) !!"));
     }
 }
