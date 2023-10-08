@@ -1,0 +1,41 @@
+@startuml
+class Context {
+  Element[] stack
+  int sp
+  Map<String, Element> globals
+}
+interface Element {
+  +void execute(Context context)
+}
+interface Value
+interface Ordered
+interface Comparable<Element>
+interface Iterable<Element>
+class Int {
+  +int value
+}
+class Bool {
+  +boolean value
+}
+interface List {
+  {static} List NIL
+}
+class Cons {
+  +Element car, cdr
+}
+class Symbol {
+  +String name
+}
+class Reader {
+  +Element read()
+}
+Element <|-- Value
+Value <|-- List
+Iterable <|-- List
+Value <|-- Ordered
+Comparable <|-- Ordered
+Ordered <|.. Int
+Ordered <|.. Bool
+List <|.. Cons
+Element <|.. Symbol
+@enduml
