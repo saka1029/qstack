@@ -298,4 +298,27 @@ public class TestQstack {
         assertEquals(Bool.FALSE, c.eval("'(0 0 ==) !!"));
         assertEquals(Bool.TRUE, c.eval("'(0 1 ==) !!"));
     }
+    
+    @Test
+    public void testQuickSort() {
+        Context c = Context.of(32);
+        c.run("'(swap @0 null?"
+            + " '(drop)"
+            + " '(uncons rot append cons) if) 'append define");
+        c.run("'(swap @0 null?"
+            + " '()"
+            + " '(uncons swap @0 @3 execute rot @3 filter swap"
+            + "   '(cons)"
+            + "   '(swap drop) if) if ^1) 'filter define");
+        c.run("'(@0 null?"
+            + " '()"
+            + " '(uncons"
+            + "   @0 @2 '(<=) cons filter qsort"
+            + "   swap @2 '(>) cons filter qsort"
+            + "   @2 swap cons append swap drop) if) 'qsort define");
+        assertEquals(c.eval("'()"), c.eval("'() qsort"));
+        assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(3 2 4 1) qsort"));
+        assertEquals(c.eval("'(1 2 3 4 5 6 7 8 9)"), c.eval("'(6 3 9 5 2 4 7 8 1) qsort"));
+    }
+    
 }
