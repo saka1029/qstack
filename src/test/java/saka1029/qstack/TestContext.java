@@ -164,4 +164,16 @@ public class TestContext {
         Context c = Context.of(10).output(System.out::print).trace(logger::info);
         c.run("1 2 3 '𩸽 stack println print stack");
     }
+    
+    @Test
+    public void testArray() {
+        Context c = Context.of(5);
+        c.run("5 array 0 4 1 '(@0 set) for");
+        assertEquals(c.eval("5"), c.eval("@0 size"));
+        assertEquals(c.eval("0"), c.eval("@0 0 get"));
+        assertEquals(c.eval("1"), c.eval("@0 1 get"));
+        assertEquals(c.eval("2"), c.eval("@0 2 get"));
+        assertEquals(c.eval("3"), c.eval("@0 3 get"));
+        assertEquals(c.eval("4"), c.eval("@0 4 get"));
+    }
 }

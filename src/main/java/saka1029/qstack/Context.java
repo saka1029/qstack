@@ -220,6 +220,10 @@ public class Context {
         add("stack", c -> output(c.toString()));
         add("print", c -> output("" + c.pop()));
         add("println", c -> output(c.pop() + System.lineSeparator()));
+        
+        add("array", c -> c.push(Array.of(((Int)c.pop()).value)));
+        add("get", c -> { int i = ((Int)c.pop()).value; Array a = (Array)c.pop(); c.push(a.get(i)); });
+        add("set", c -> { Element e = c.pop(); int i = ((Int)c.pop()).value; Array a = (Array)c.pop(); a.set(i, e); });
     }
 
 }
