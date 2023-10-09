@@ -327,11 +327,11 @@ public class TestQstack {
         // (1 2 3 4 5 6) 2 4 6
         // (1 2 3 4 5 6) 4 6 2
         // (1 2 3 4 5 6) 4
-        c.run("'(@0 2 * @2 size rot '(@1 swap true set) for) 'sieve define");
-        c.run("'('() 2 @2 size 1 '(@0 @3 swap get '(drop) '(swap cons) if) for ^1 reverse) 'to-list define");
-        c.run("'(@0 array swap 2 swap 1 '(sieve) for to-list) 'sieve-of-eratosthenes define");
+        c.run("'(@0 2 * @2 size rot '(@1 swap true set) for) 'sieve-of-eratosthenes define");
+        c.run("'('() 2 @2 size 1 '(@0 @3 swap get '(drop) '(swap cons) if) for reverse ^1) 'array-to-list define");
+        c.run("'(@0 array swap 2 swap 1 '(sieve-of-eratosthenes) for array-to-list) 'primes define");
         assertEquals(c.eval("'(2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97)"),
-            c.eval("100 sieve-of-eratosthenes"));
+            c.eval("100 primes"));
     }
     
 }
