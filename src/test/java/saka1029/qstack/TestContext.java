@@ -167,8 +167,8 @@ public class TestContext {
     
     @Test
     public void testArray() {
-        Context c = Context.of(5);
-        c.run("5 array 0 4 1 '(@0 set) for");
+        Context c = Context.of(5).output(logger::info);
+        c.run("5 array 0 4 1 '(@1 swap @0 set) for");
         assertEquals(c.eval("5"), c.eval("@0 size"));
         assertEquals(c.eval("0"), c.eval("@0 0 get"));
         assertEquals(c.eval("1"), c.eval("@0 1 get"));

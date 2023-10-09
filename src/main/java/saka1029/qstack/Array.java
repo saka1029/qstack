@@ -8,7 +8,7 @@ public class Array implements Value {
     
     Array(int size) {
         this.array = new Element[size];
-        Arrays.fill(this.array, List.NIL);
+        Arrays.fill(this.array, Bool.FALSE);
     }
     
     public static Array of(int size) {

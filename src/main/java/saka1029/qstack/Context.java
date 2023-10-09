@@ -222,6 +222,7 @@ public class Context {
         add("println", c -> output(c.pop() + System.lineSeparator()));
         
         add("array", c -> c.push(Array.of(((Int)c.pop()).value)));
+        add("size", c -> c.push(Int.of(((Array)c.pop()).size())));
         add("get", c -> { int i = ((Int)c.pop()).value; Array a = (Array)c.pop(); c.push(a.get(i)); });
         add("set", c -> { Element e = c.pop(); int i = ((Int)c.pop()).value; Array a = (Array)c.pop(); a.set(i, e); });
     }
