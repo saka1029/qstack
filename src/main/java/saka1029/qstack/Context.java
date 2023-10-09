@@ -185,6 +185,7 @@ public class Context {
         add("null?", c -> c.push(Bool.of(c.pop().equals(List.NIL))));
         add("list?", c -> c.push(Bool.of(c.pop() instanceof List)));
         add("length", c -> c.push(Int.of(((List)c.pop()).length())));
+        add("append", c -> { List right = (List)c.pop(); Element left = c.pop(); c.push(List.append(left, right)); });
         add("reverse", c -> {
             List list = (List)c.pop();
             Element result = List.NIL;

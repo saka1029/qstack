@@ -40,6 +40,10 @@ public interface List extends Element, Iterable<Element> {
         return length;
     }
 
+    public static List append(Element left, List right) {
+        return left instanceof Cons c ? Cons.of(c.car, append(c.cdr, right)) : right;
+    }
+
     @Override
     default void execute(Context c) {
         for (Element e : this)
