@@ -170,6 +170,18 @@ public class TestContext {
         Context c = Context.of(5);
         assertEquals(c.eval("5"), c.eval("'(0 1 2 3 4) length"));
     }
+    
+    @Test
+    public void testToList() {
+        Context c = Context.of(5).output(logger::info);
+        assertEquals(c.eval("'(1 2 3)"), c.eval("3 array @0 1 1 set @0 2 2 set @0 3 3 set to-list"));
+    }
+    
+    @Test
+    public void testToArray() {
+        Context c = Context.of(5).output(logger::info);
+        assertEquals(c.eval("3 array @0 1 1 set @0 2 2 set @0 3 3 set"), c.eval("'(1 2 3) to-array"));
+    }
 
     @Test
     public void testArray() {

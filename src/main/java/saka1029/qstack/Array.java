@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class Array implements Value {
 
-    final Element[] array;
+    public final Element[] array;
     
     Array(int size) {
         this.array = new Element[size];
@@ -25,6 +25,16 @@ public class Array implements Value {
     
     public void set(int index, Element element) {
         array[index - 1] = element;
+    }
+    
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(array);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Array a && Arrays.deepEquals(a.array, array);
     }
     
     @Override

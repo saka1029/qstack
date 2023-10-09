@@ -233,6 +233,16 @@ public class Context {
         add("size", c -> c.push(Int.of(((Array)c.pop()).size())));
         add("get", c -> { int i = ((Int)c.pop()).value; Array a = (Array)c.pop(); c.push(a.get(i)); });
         add("set", c -> { Element e = c.pop(); int i = ((Int)c.pop()).value; Array a = (Array)c.pop(); a.set(i, e); });
+        add("to-array", c -> {
+            List list = (List)c.pop();
+            int length = list.length();
+            Array array = Array.of(length);
+            int i = 1;
+            for (Element e : list)
+                array.set(i++, e);
+            c.push(array);
+        });
+        add("to-list", c -> c.push(List.of(((Array)c.pop()).array)));
     }
 
 }
