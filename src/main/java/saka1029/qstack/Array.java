@@ -20,11 +20,11 @@ public class Array implements Value {
     }
     
     public Element get(int index) {
-        return array[index];
+        return array[index - 1];
     }
     
     public void set(int index, Element element) {
-        array[index] = element;
+        array[index - 1] = element;
     }
     
     @Override

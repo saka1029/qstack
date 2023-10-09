@@ -58,11 +58,11 @@ public class TestQstack {
     @Test
     public void testReverseByForeach() {
         Context c = Context.of(10);
-        c.run("'('() swap '(swap cons) foreach) 'reverse define");
-        assertEquals(c.eval("'()"), c.eval("'() reverse"));
-        assertEquals(c.eval("'(1)"), c.eval("'(1) reverse"));
-        assertEquals(c.eval("'(2 1)"), c.eval("'(1 2) reverse"));
-        assertEquals(c.eval("'(4 3 2 1)"), c.eval("'(1 2 3 4) reverse"));
+        c.run("'('() swap '(swap cons) foreach) 'my-reverse define");
+        assertEquals(c.eval("'()"), c.eval("'() my-reverse"));
+        assertEquals(c.eval("'(1)"), c.eval("'(1) my-reverse"));
+        assertEquals(c.eval("'(2 1)"), c.eval("'(1 2) my-reverse"));
+        assertEquals(c.eval("'(4 3 2 1)"), c.eval("'(1 2 3 4) my-reverse"));
     }
     
     /**
@@ -79,11 +79,11 @@ public class TestQstack {
     public void testReverseRecursive() {
         Context c = Context.of(10);
         c.run("'(@0 null? '(drop) '(uncons rrot swap cons swap reverse2) if)  'reverse2 define");
-        c.run("'('() swap reverse2) 'reverse define");
-        assertEquals(c.eval("'()"), c.eval("'() reverse"));
-        assertEquals(c.eval("'(1)"), c.eval("'(1) reverse"));
-        assertEquals(c.eval("'(2 1)"), c.eval("'(1 2) reverse"));
-        assertEquals(c.eval("'(4 3 2 1)"), c.eval("'(1 2 3 4) reverse"));
+        c.run("'('() swap reverse2) 'my-reverse define");
+        assertEquals(c.eval("'()"), c.eval("'() my-reverse"));
+        assertEquals(c.eval("'(1)"), c.eval("'(1) my-reverse"));
+        assertEquals(c.eval("'(2 1)"), c.eval("'(1 2) my-reverse"));
+        assertEquals(c.eval("'(4 3 2 1)"), c.eval("'(1 2 3 4) my-reverse"));
     }
 
     /**
@@ -319,6 +319,19 @@ public class TestQstack {
         assertEquals(c.eval("'()"), c.eval("'() qsort"));
         assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(3 2 4 1) qsort"));
         assertEquals(c.eval("'(1 2 3 4 5 6 7 8 9)"), c.eval("'(6 3 9 5 2 4 7 8 1) qsort"));
+    }
+    
+    @Test
+    public void testSieveOfEratosthenes() {
+        Context c = Context.of(6).output(logger::info);
+        // (1 2 3 4 5 6) 2 4 6
+        // (1 2 3 4 5 6) 4 6 2
+        // (1 2 3 4 5 6) 4
+        c.run("'(@0 2 * @2 size rot '(@1 swap true set) for) 'sieve define");
+        c.run("'('() 2 @2 size 1 '(@0 @3 swap get '(drop) '(swap cons) if) for ^1 reverse) 'to-list define");
+        c.run("'(@0 array swap 2 swap 1 '(sieve) for to-list) 'sieve-of-eratosthenes define");
+        assertEquals(c.eval("'(2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97)"),
+            c.eval("100 sieve-of-eratosthenes"));
     }
     
 }

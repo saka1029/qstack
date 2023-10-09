@@ -184,6 +184,13 @@ public class Context {
         add("quote", c -> c.push(Quote.of(c.pop())));
         add("null?", c -> c.push(Bool.of(c.pop().equals(List.NIL))));
         add("list?", c -> c.push(Bool.of(c.pop() instanceof List)));
+        add("reverse", c -> {
+            List list = (List)c.pop();
+            Element result = List.NIL;
+            for (Element e : list)
+                result = Cons.of(e, result);
+            c.push(result);
+        });
         add("if", c -> {
             Element orElse = c.pop(), then = c.pop();
             execute(((Bool)c.pop()).value ? then : orElse);

@@ -168,12 +168,12 @@ public class TestContext {
     @Test
     public void testArray() {
         Context c = Context.of(5).output(logger::info);
-        c.run("5 array 0 4 1 '(@1 swap @0 set) for");
+        c.run("5 array 1 5 1 '(@1 swap @0 set) for");
         assertEquals(c.eval("5"), c.eval("@0 size"));
-        assertEquals(c.eval("0"), c.eval("@0 0 get"));
         assertEquals(c.eval("1"), c.eval("@0 1 get"));
         assertEquals(c.eval("2"), c.eval("@0 2 get"));
         assertEquals(c.eval("3"), c.eval("@0 3 get"));
         assertEquals(c.eval("4"), c.eval("@0 4 get"));
+        assertEquals(c.eval("5"), c.eval("@0 5 get"));
     }
 }
