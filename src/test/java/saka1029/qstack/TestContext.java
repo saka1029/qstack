@@ -166,6 +166,12 @@ public class TestContext {
     }
     
     @Test
+    public void testLength() {
+        Context c = Context.of(5);
+        assertEquals(c.eval("5"), c.eval("'(0 1 2 3 4) length"));
+    }
+
+    @Test
     public void testArray() {
         Context c = Context.of(5).output(logger::info);
         c.run("5 array 1 5 1 '(@1 swap @0 set) for");

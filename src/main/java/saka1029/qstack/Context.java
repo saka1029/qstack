@@ -184,6 +184,7 @@ public class Context {
         add("quote", c -> c.push(Quote.of(c.pop())));
         add("null?", c -> c.push(Bool.of(c.pop().equals(List.NIL))));
         add("list?", c -> c.push(Bool.of(c.pop() instanceof List)));
+        add("length", c -> c.push(Int.of(((List)c.pop()).length())));
         add("reverse", c -> {
             List list = (List)c.pop();
             Element result = List.NIL;

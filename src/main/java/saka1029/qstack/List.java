@@ -32,6 +32,13 @@ public interface List extends Element, Iterable<Element> {
             result = Cons.of(i.previous(), result);
         return result;
     }
+    
+    default int length() {
+        int length = 0;
+        for (@SuppressWarnings("unused") Element e : this)
+            ++length;
+        return length;
+    }
 
     @Override
     default void execute(Context c) {
