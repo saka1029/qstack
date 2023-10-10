@@ -148,6 +148,21 @@ public class TestQstack {
     
     /**
      * リストの先頭からフィルターする。
+     * '(0 1 2 3) '(2 % 0 ==) filter
+     * (0 1 2 3) (2 % 0 ==) : swap
+     * 
+     * (2 % 0 ==) (0 1 2 3) : uncons
+     * (2 % 0 ==) 0 (1 2 3) : swap
+     * (2 % 0 ==) (1 2 3) 0 : @0
+     * (2 % 0 ==) (1 2 3) 0 0 : @3
+     * (2 % 0 ==) (1 2 3) 0 0 (2 % 0 ==) : execute
+     * (2 % 0 ==) (1 2 3) 0 true : rot
+     * (2 % 0 ==) 0 true (1 2 3) : @3
+     * (2 % 0 ==) 0 true (1 2 3) (2 % 0 ==) : filter
+     * (2 % 0 ==) 0 true (2) : swap
+     * (2 % 0 ==) 0 (2) true : '(cons) '(swap drop) if
+     * (2 % 0 ==) (0 2) : ^1
+     * (0 2) : ^1
      */
     @Test
     public void testFilterRecursiveFromFirst() {
