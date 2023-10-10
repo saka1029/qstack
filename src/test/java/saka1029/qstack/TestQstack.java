@@ -317,14 +317,10 @@ public class TestQstack {
     @Test
     public void testQuickSort() {
         Context c = Context.of(32);
-//        c.run("'(swap @0 null?"
-//            + " '(drop)"
-//            + " '(uncons rot append cons) if) 'append define");
         c.run("'(swap @0 null?"
             + " '()"
-            + " '(uncons swap @0 @3 execute rot @3 filter swap"
-            + "   'cons"
-            + "   '^1 if) if ^1) 'filter define");
+            + " '(uncons swap @0 @3 execute rot @3 filter swap 'cons '^1 if)"
+            + " if ^1) 'filter define");
         c.run("'(@0 null?"
             + " '()"
             + " '(uncons"
