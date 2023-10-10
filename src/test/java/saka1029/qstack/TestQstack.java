@@ -15,7 +15,7 @@ public class TestQstack {
     @Test
     public void testFactRecursive() {
         Context c = Context.of(10);
-        c.run("'(@0 0 <= '(drop 1) '(@0 1 - ! *) if) '! define");
+        c.run("'(@0 0 <= '(1 ^1) '(@0 1 - ! *) if) '! define");
         assertEquals(c.eval("1"), c.eval("0 !"));
         assertEquals(c.eval("1"), c.eval("1 !"));
         assertEquals(c.eval("2"), c.eval("2 !"));
@@ -78,7 +78,7 @@ public class TestQstack {
     @Test
     public void testReverseRecursive() {
         Context c = Context.of(10);
-        c.run("'(@0 null? '(drop) '(uncons rrot rcons swap reverse2) if)  'reverse2 define");
+        c.run("'(@0 null? 'drop '(uncons rrot rcons swap reverse2) if)  'reverse2 define");
         c.run("'('() swap reverse2) 'my-reverse define");
         assertEquals(c.eval("'()"), c.eval("'() my-reverse"));
         assertEquals(c.eval("'(1)"), c.eval("'(1) my-reverse"));
@@ -324,7 +324,7 @@ public class TestQstack {
             + " '()"
             + " '(uncons swap @0 @3 execute rot @3 filter swap"
             + "   'cons"
-            + "   '(swap drop) if) if ^1) 'filter define");
+            + "   '^1 if) if ^1) 'filter define");
         c.run("'(@0 null?"
             + " '()"
             + " '(uncons"
