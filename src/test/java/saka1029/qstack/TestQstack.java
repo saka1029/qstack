@@ -141,7 +141,7 @@ public class TestQstack {
     @Test
     public void testFilterRecursiveFromLast() {
         Context c = Context.of(20);
-        c.run("'(swap @0 null? '() '(uncons @2 filter swap @0 @3 execute '(swap cons) '(drop) if) if ^1) 'filter define");
+        c.run("'(swap @0 null? '() '(uncons @2 filter swap @0 @3 execute '(swap cons) 'drop if) if ^1) 'filter define");
         assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
         assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
     }
@@ -176,14 +176,14 @@ public class TestQstack {
     public void testFilterByForeachAndReverse() {
         Context c = Context.of(20);
 //        c.run("'('() swap '(swap cons) foreach) 'reverse define");
-        c.run("'(swap '() swap '(@0 @3 execute '(swap cons) '(drop) if) foreach ^1 reverse) 'filter define");
+        c.run("'(swap '() swap '(@0 @3 execute '(swap cons) 'drop if) foreach ^1 reverse) 'filter define");
         assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
         assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
     }
     
     /**
      * filter-predicateは述語(E->B)をフィルター用の述語に変換する高階関数。
-     * pred filter-predicate -> (@0 pred execute '(swap cons) '(drop) if)
+     * pred filter-predicate -> (@0 pred execute '(swap cons) 'drop if)
      * (0 1 2 3) filter-predicate : '()
      * (0 1 2 3) filter-predicate '() : rot
      * filter-predicate '() (0 1 2 3) : rot
@@ -201,7 +201,7 @@ public class TestQstack {
     public void testFilterByCompound() {
         Context c = Context.of(20); //.trace(logger::info);
 //        c.run("'('() swap '(swap cons) foreach) 'reverse define");
-        c.run("'('(execute '(swap cons) '(drop) if) cons '@0 swap cons) 'filter-predicate define");
+        c.run("'('(execute '(swap cons) 'drop if) cons '@0 swap cons) 'filter-predicate define");
         c.run("'(filter-predicate '() rrot foreach reverse) 'filter define");
         assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
         assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
