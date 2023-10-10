@@ -180,6 +180,7 @@ public class Context {
         add("car", c -> c.push(((Cons)c.pop()).car));
         add("cdr", c -> c.push(((Cons)c.pop()).cdr));
         add("cons", c -> { Element r = c.pop(), l = c.pop(); c.push(Cons.of(l, r)); });
+        add("rcons", c -> { Element r = c.pop(), l = c.pop(); c.push(Cons.of(r, l)); });
         add("uncons", c -> { Cons e = (Cons)c.pop(); c.push(e.car); c.push(e.cdr); });
         add("quote", c -> c.push(Quote.of(c.pop())));
         add("null?", c -> c.push(Bool.of(c.pop().equals(List.NIL))));

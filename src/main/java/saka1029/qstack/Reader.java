@@ -110,6 +110,7 @@ public class Reader {
         }
         if (ch != '"')
             throw error("'\"' expected");
+        get(); // skip '"'
         return Str.of(sb.toString());
     }
 

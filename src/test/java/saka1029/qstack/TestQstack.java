@@ -48,7 +48,7 @@ public class TestQstack {
     @Test
     public void testAppend() {
         Context c = Context.of(10);
-        c.run("'(swap @0 null? '(drop) '(uncons rot append cons) if) 'my-append define");
+        c.run("'(swap @0 null? 'drop '(uncons rot append cons) if) 'my-append define");
         assertEquals(c.eval("'(1 2 3 4)"), c.eval("'() '(1 2 3 4) my-append"));
         assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(1) '(2 3 4) my-append"));
         assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(1 2) '(3 4) my-append"));
@@ -58,7 +58,7 @@ public class TestQstack {
     @Test
     public void testReverseByForeach() {
         Context c = Context.of(10);
-        c.run("'('() swap '(swap cons) foreach) 'my-reverse define");
+        c.run("'('() swap 'rcons foreach) 'my-reverse define");
         assertEquals(c.eval("'()"), c.eval("'() my-reverse"));
         assertEquals(c.eval("'(1)"), c.eval("'(1) my-reverse"));
         assertEquals(c.eval("'(2 1)"), c.eval("'(1 2) my-reverse"));
@@ -78,7 +78,7 @@ public class TestQstack {
     @Test
     public void testReverseRecursive() {
         Context c = Context.of(10);
-        c.run("'(@0 null? '(drop) '(uncons rrot swap cons swap reverse2) if)  'reverse2 define");
+        c.run("'(@0 null? '(drop) '(uncons rrot rcons swap reverse2) if)  'reverse2 define");
         c.run("'('() swap reverse2) 'my-reverse define");
         assertEquals(c.eval("'()"), c.eval("'() my-reverse"));
         assertEquals(c.eval("'(1)"), c.eval("'(1) my-reverse"));
@@ -141,7 +141,7 @@ public class TestQstack {
     @Test
     public void testFilterRecursiveFromLast() {
         Context c = Context.of(20);
-        c.run("'(swap @0 null? '() '(uncons @2 filter swap @0 @3 execute '(swap cons) 'drop if) if ^1) 'filter define");
+        c.run("'(swap @0 null? '() '(uncons @2 filter swap @0 @3 execute 'rcons 'drop if) if ^1) 'filter define");
         assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
         assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
     }
@@ -176,7 +176,7 @@ public class TestQstack {
     public void testFilterByForeachAndReverse() {
         Context c = Context.of(20);
 //        c.run("'('() swap '(swap cons) foreach) 'reverse define");
-        c.run("'(swap '() swap '(@0 @3 execute '(swap cons) 'drop if) foreach ^1 reverse) 'filter define");
+        c.run("'(swap '() swap '(@0 @3 execute 'rcons 'drop if) foreach ^1 reverse) 'filter define");
         assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
         assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
     }
@@ -201,7 +201,7 @@ public class TestQstack {
     public void testFilterByCompound() {
         Context c = Context.of(20); //.trace(logger::info);
 //        c.run("'('() swap '(swap cons) foreach) 'reverse define");
-        c.run("'('(execute '(swap cons) 'drop if) cons '@0 swap cons) 'filter-predicate define");
+        c.run("'('(execute 'rcons 'drop if) cons '@0 rcons) 'filter-predicate define");
         c.run("'(filter-predicate '() rrot foreach reverse) 'filter define");
         assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
         assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
@@ -240,7 +240,7 @@ public class TestQstack {
     @Test
     public void testIota() {
         Context c = Context.of(10);
-        c.run("'('() swap 1 -1 '(swap cons) for) 'iota define");
+        c.run("'('() swap 1 -1 'rcons for) 'iota define");
         assertEquals(c.eval("'(1 2 3 4)"), c.eval("4 iota"));
         c.run("'(1 swap iota '* foreach) '! define");
        assertEquals(c.eval("1"), c.eval("0 !")); 
@@ -323,14 +323,14 @@ public class TestQstack {
         c.run("'(swap @0 null?"
             + " '()"
             + " '(uncons swap @0 @3 execute rot @3 filter swap"
-            + "   '(cons)"
+            + "   'cons"
             + "   '(swap drop) if) if ^1) 'filter define");
         c.run("'(@0 null?"
             + " '()"
             + " '(uncons"
             + "   @0 @2 '(<=) cons filter qsort"
             + "   swap @2 '(>) cons filter qsort"
-            + "   @2 swap cons append ^1) if) 'qsort define");
+            + "   @2 rcons append ^1) if) 'qsort define");
         assertEquals(c.eval("'()"), c.eval("'() qsort"));
         assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(3 2 4 1) qsort"));
         assertEquals(c.eval("'(1 2 3 4 5 6 7 8 9)"), c.eval("'(6 3 9 5 2 4 7 8 1) qsort"));
@@ -344,6 +344,14 @@ public class TestQstack {
         c.run("'(@0 array swap 2 swap 1 '(sieve-of-eratosthenes) for array-to-list) 'primes define");
         assertEquals(c.eval("'(2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97)"),
             c.eval("100 primes"));
+    }
+    
+    @Test
+    public void testHelloWorld() {
+        StringBuilder sb = new StringBuilder();
+        Context c = Context.of(6).output(sb::append);
+        c.run("\"Hello World\\r\\n\" print");
+        assertEquals("Hello World\r\n", sb.toString());
     }
     
 }
