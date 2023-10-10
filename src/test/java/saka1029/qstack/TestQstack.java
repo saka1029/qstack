@@ -160,14 +160,14 @@ public class TestQstack {
      * (2 % 0 ==) 0 true (1 2 3) : @3
      * (2 % 0 ==) 0 true (1 2 3) (2 % 0 ==) : filter
      * (2 % 0 ==) 0 true (2) : swap
-     * (2 % 0 ==) 0 (2) true : '(cons) '(swap drop) if
+     * (2 % 0 ==) 0 (2) true : 'cons '@1 if
      * (2 % 0 ==) (0 2) : ^1
      * (0 2) : ^1
      */
     @Test
     public void testFilterRecursiveFromFirst() {
         Context c = Context.of(20);
-        c.run("'(swap @0 null? '() '(uncons swap @0 @3 execute rot @3 filter swap '(cons) '(swap drop) if) if ^1) 'filter define");
+        c.run("'(swap @0 null? '() '(uncons swap @0 @3 execute rot @3 filter swap 'cons '^1 if) if ^1) 'filter define");
         assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
         assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
     }
