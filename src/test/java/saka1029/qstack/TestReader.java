@@ -43,5 +43,13 @@ public class TestReader {
         assertEquals(Quote.of(List.of(Int.ONE, Int.TWO)), reader.read());
         assertNull(reader.read());
     }
+    
+    @Test
+    public void testStr() {
+        Reader reader = Reader.of("  \"abc\" \"\\r\\n\" ");
+        assertEquals(Str.of("abc"), reader.read());
+        assertEquals(Str.of("\r\n"), reader.read());
+        assertNull(reader.read());
+    }
 
 }

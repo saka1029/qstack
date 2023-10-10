@@ -73,7 +73,7 @@ public class Reader {
 
     static boolean isWord(int ch) {
         return switch (ch) {
-            case '(', ')', '.', '\'', -1 -> false;
+            case '(', ')', '.', '\'', '"', -1 -> false;
             default -> !Character.isWhitespace(ch);
         };
     }
@@ -91,6 +91,28 @@ public class Reader {
             return Symbol.of(word);
     }
 
+    Str str() {
+        get(); // skip '"'
+        StringBuilder sb = new StringBuilder();
+        while (ch != -1 && ch != '"') {
+            if (ch == '\\') {
+                get(); // skip '\\'
+                switch (ch) {
+                    case 'r': sb.append('\r'); break;
+                    case 'n': sb.append('\n'); break;
+                    case 't': sb.append('\t'); break;
+                    case '\\': sb.append('\\'); break;
+                    default: sb.append((char)ch); break;
+                }
+            } else
+                sb.append((char)ch);
+            get();
+        }
+        if (ch != '"')
+            throw error("'\"' expected");
+        return Str.of(sb.toString());
+    }
+
     public Element read() {
         spaces();
         switch (ch) {
@@ -103,6 +125,8 @@ public class Reader {
                 throw error("unexpected '%c'", (char)ch);
             case '\'':
                 return quote();
+            case '"':
+                return str();
             default:
                 return element();
         }
