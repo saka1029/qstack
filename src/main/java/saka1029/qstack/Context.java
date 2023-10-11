@@ -166,6 +166,10 @@ public class Context {
         add("execute", c -> c.execute(c.pop()));
         add("true", Bool.TRUE);
         add("false", Bool.FALSE);
+        add("and", c -> { Bool r = (Bool)c.pop(), l = (Bool)c.pop(); c.push(Bool.of(l.value & r.value)); });
+        add("or", c -> { Bool r = (Bool)c.pop(), l = (Bool)c.pop(); c.push(Bool.of(l.value | r.value)); });
+        add("xor", c -> { Bool r = (Bool)c.pop(), l = (Bool)c.pop(); c.push(Bool.of(l.value ^ r.value)); });
+        add("not", c -> { Bool b = (Bool)c.pop(); c.push(Bool.of(!b.value)); });
         add("==", c -> { Element r = c.pop(), l = c.pop(); c.push(Bool.of(l.equals(r))); });
         add("!=", c -> { Element r = c.pop(), l = c.pop(); c.push(Bool.of(!l.equals(r))); });
         add("<", c -> { Ordered r = (Ordered)c.pop(), l = (Ordered)c.pop(); c.push(Bool.of(l.compareTo(r) < 0)); });
