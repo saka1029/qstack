@@ -83,6 +83,25 @@ public class TestContext {
     }
     
     @Test
+    public void testBool() {
+        Context c = Context.of(10);
+        assertEquals(Bool.TRUE, c.eval("true true and"));
+        assertEquals(Bool.FALSE, c.eval("true false and"));
+        assertEquals(Bool.FALSE, c.eval("false true and"));
+        assertEquals(Bool.FALSE, c.eval("false false and"));
+        assertEquals(Bool.TRUE, c.eval("true true or"));
+        assertEquals(Bool.TRUE, c.eval("true false or"));
+        assertEquals(Bool.TRUE, c.eval("false true or"));
+        assertEquals(Bool.FALSE, c.eval("false false or"));
+        assertEquals(Bool.FALSE, c.eval("true true xor"));
+        assertEquals(Bool.TRUE, c.eval("true false xor"));
+        assertEquals(Bool.TRUE, c.eval("false true xor"));
+        assertEquals(Bool.FALSE, c.eval("false false xor"));
+        assertEquals(Bool.FALSE, c.eval("true not"));
+        assertEquals(Bool.TRUE, c.eval("false not"));
+    }
+
+    @Test
     public void testExit() {
         Context c = Context.of(10);
         c.run("1 2 3 4");
