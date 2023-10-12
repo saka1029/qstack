@@ -404,12 +404,12 @@ public class TestQstack {
      */
     @Test
     public void testPermutations() {
-        Context c = Context.of(50).output(logger::info);
+        Context c = Context.of(50).output(System.err::println).trace(logger::info);
         c.run("'(@0 null? '^1 '(uncons @2 swap remove rot @2 == '^1 'cons if) if) 'remove define");
-        c.run("'(@1 null? '(@0 reverse print) '(@1 '(@0 @3 remove swap @2 cons stack perm) foreach ^2) if) 'perm define");
+        c.run("'(@1 null? '(@0 reverse print) '(@1 '(@0 @3 remove swap @2 cons perm ^2) foreach) if) 'perm define");
         c.run("'('() perm) 'permutations define");
 //        c.run("'() permutations");
-//        c.run("'(1) permutations");
-        c.run("'(1 2 3) permutations");
+        c.run("'(1) permutations");
+//        c.run("'(1 2 3) permutations");
     }
 }
