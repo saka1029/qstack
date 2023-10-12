@@ -354,4 +354,29 @@ public class TestQstack {
         assertEquals("Hello World\r\n", sb.toString());
     }
     
+    /**
+     * Scheme:
+     * (define (remove x ls)
+     *   (cond
+     *    ((null? ls) '())
+     *    ((equal? (car ls) x)
+     *     (remove x (cdr ls)))
+     *    (else
+     *     (cons (car ls) (remove x (cdr ls))))))
+     */
+    @Test
+    public void testRemove() {
+        Context c = Context.of(10).output(logger::info);
+        // x (1 2 3), x 1 (2 3), x 1 (2 3) 1, x 1 (2 3) 1 x, x 1 (2 3), 1 (2 3) x, 1 x (2 3)
+        c.run("'(@0 null? '^1 '(uncons @2 swap remove @1 @3 == '^1 'cons if) if) 'remove define");
+        c.run("'(@0 null? '^1 '(uncons @1 @3 == '(rot swap remove ^1) '(rot swap remove cons) if) if) 'remove define");
+        assertEquals(c.eval("'()"), c.eval("1 '() remove"));
+        assertEquals(c.eval("'()"), c.eval("1 '(1) remove"));
+        assertEquals(c.eval("'(2)"), c.eval("1 '(1 2) remove"));
+        assertEquals(c.eval("'(2 3)"), c.eval("1 '(1 2 3) remove"));
+        assertEquals(c.eval("'(1 3)"), c.eval("2 '(1 2 3) remove"));
+        assertEquals(c.eval("'(1 2)"), c.eval("3 '(1 2 3) remove"));
+        assertEquals(c.eval("'(1 2 3)"), c.eval("4 '(1 2 3) remove"));
+    }
+    
 }
