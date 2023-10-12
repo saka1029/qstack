@@ -361,10 +361,10 @@ public class TestQstack {
      */
     @Test
     public void testRemove() {
-        Context c = Context.of(10).output(logger::info);
+        Context c = Context.of(20).output(logger::info);
         // x (1 2 3), x 1 (2 3), x 1 (2 3) 1, x 1 (2 3) 1 x, x 1 (2 3), 1 (2 3) x, 1 x (2 3)
-        c.run("'(@0 null? '^1 '(uncons @2 swap remove @1 @3 == '^1 'cons if) if) 'remove define");
-        c.run("'(@0 null? '^1 '(uncons @1 @3 == '(rot swap remove ^1) '(rot swap remove cons) if) if) 'remove define");
+        c.run("'(@0 null? '^1 '(uncons @2 swap remove rot @2 == '^1 'cons if) if) 'remove define");
+//        c.run("'(@0 null? '^1 '(uncons @1 @3 == '(rot swap remove ^1) '(rot swap remove cons) if) if) 'remove define");
         assertEquals(c.eval("'()"), c.eval("1 '() remove"));
         assertEquals(c.eval("'()"), c.eval("1 '(1) remove"));
         assertEquals(c.eval("'(2)"), c.eval("1 '(1 2) remove"));
