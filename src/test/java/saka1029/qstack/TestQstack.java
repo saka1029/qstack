@@ -175,7 +175,6 @@ public class TestQstack {
     @Test
     public void testFilterByForeachAndReverse() {
         Context c = Context.of(20);
-//        c.run("'('() swap '(swap cons) foreach) 'reverse define");
         c.run("'(swap '() swap '(@0 @3 execute 'rcons 'drop if) foreach ^1 reverse) 'filter define");
         assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
         assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
@@ -183,7 +182,7 @@ public class TestQstack {
     
     /**
      * filter-predicateは述語(E->B)をフィルター用の述語に変換する高階関数。
-     * pred filter-predicate -> (@0 pred execute '(swap cons) 'drop if)
+     * pred filter-predicate -> (@0 pred execute 'rcons 'drop if)
      * (0 1 2 3) filter-predicate : '()
      * (0 1 2 3) filter-predicate '() : rot
      * filter-predicate '() (0 1 2 3) : rot
@@ -200,7 +199,7 @@ public class TestQstack {
     @Test
     public void testFilterByCompound() {
         Context c = Context.of(20); //.trace(logger::info);
-//        c.run("'('() swap '(swap cons) foreach) 'reverse define");
+//        c.run("'('() swap 'rcons foreach) 'reverse define");
         c.run("'('(execute 'rcons 'drop if) cons '@0 rcons) 'filter-predicate define");
         c.run("'(filter-predicate '() rrot foreach reverse) 'filter define");
         assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
@@ -317,14 +316,10 @@ public class TestQstack {
     @Test
     public void testQuickSort() {
         Context c = Context.of(32);
-//        c.run("'(swap @0 null?"
-//            + " '(drop)"
-//            + " '(uncons rot append cons) if) 'append define");
         c.run("'(swap @0 null?"
             + " '()"
-            + " '(uncons swap @0 @3 execute rot @3 filter swap"
-            + "   'cons"
-            + "   '^1 if) if ^1) 'filter define");
+            + " '(uncons swap @0 @3 execute rot @3 filter swap 'cons '^1 if)"
+            + " if ^1) 'filter define");
         c.run("'(@0 null?"
             + " '()"
             + " '(uncons"
@@ -340,7 +335,7 @@ public class TestQstack {
     public void testSieveOfEratosthenes() {
         Context c = Context.of(6).output(logger::info);
         c.run("'(@0 2 * @2 size rot '(@1 swap true set) for) 'sieve-of-eratosthenes define");
-        c.run("'('() 2 @2 size 1 '(@0 @3 swap get '(drop) '(swap cons) if) for reverse ^1) 'array-to-list define");
+        c.run("'('() 2 @2 size 1 '(@0 @3 swap get 'drop 'rcons if) for reverse ^1) 'array-to-list define");
         c.run("'(@0 array swap 2 swap 1 '(sieve-of-eratosthenes) for array-to-list) 'primes define");
         assertEquals(c.eval("'(2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97)"),
             c.eval("100 primes"));

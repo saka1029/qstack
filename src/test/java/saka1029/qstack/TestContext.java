@@ -83,6 +83,25 @@ public class TestContext {
     }
     
     @Test
+    public void testBool() {
+        Context c = Context.of(10);
+        assertEquals(Bool.TRUE, c.eval("true true and"));
+        assertEquals(Bool.FALSE, c.eval("true false and"));
+        assertEquals(Bool.FALSE, c.eval("false true and"));
+        assertEquals(Bool.FALSE, c.eval("false false and"));
+        assertEquals(Bool.TRUE, c.eval("true true or"));
+        assertEquals(Bool.TRUE, c.eval("true false or"));
+        assertEquals(Bool.TRUE, c.eval("false true or"));
+        assertEquals(Bool.FALSE, c.eval("false false or"));
+        assertEquals(Bool.FALSE, c.eval("true true xor"));
+        assertEquals(Bool.TRUE, c.eval("true false xor"));
+        assertEquals(Bool.TRUE, c.eval("false true xor"));
+        assertEquals(Bool.FALSE, c.eval("false false xor"));
+        assertEquals(Bool.FALSE, c.eval("true not"));
+        assertEquals(Bool.TRUE, c.eval("false not"));
+    }
+
+    @Test
     public void testExit() {
         Context c = Context.of(10);
         c.run("1 2 3 4");
@@ -174,13 +193,13 @@ public class TestContext {
     @Test
     public void testToList() {
         Context c = Context.of(5).output(logger::info);
-        assertEquals(c.eval("'(1 2 3)"), c.eval("3 array @0 1 1 set @0 2 2 set @0 3 3 set to-list"));
+        assertEquals(c.eval("'(1 2 3)"), c.eval("3 array @0 1 1 set @0 2 2 set @0 3 3 set A-L"));
     }
     
     @Test
     public void testToArray() {
         Context c = Context.of(5).output(logger::info);
-        assertEquals(c.eval("3 array @0 1 1 set @0 2 2 set @0 3 3 set"), c.eval("'(1 2 3) to-array"));
+        assertEquals(c.eval("3 array @0 1 1 set @0 2 2 set @0 3 3 set"), c.eval("'(1 2 3) L-A"));
     }
 
     @Test
