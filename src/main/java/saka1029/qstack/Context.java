@@ -109,6 +109,10 @@ public class Context {
         --sp;
     }
     
+    public void drop(int count) {
+        sp -= count;
+    }
+    
     /**
      * スタックトップを残して、n個の要素をドロップする。
      * [1 2 3 4] : exit(2) -> [1 4]
@@ -123,6 +127,7 @@ public class Context {
         Element e;
         while ((e = reader.read()) != null)
             execute(e);
+        trace("  ".repeat(nest++) + this);
     }
     
     public Element eval(String source) {
@@ -160,6 +165,8 @@ public class Context {
         add("^3", c -> c.exit(3));
         add("^4", c -> c.exit(4));
         add("drop", c -> c.drop());
+        add("drop2", c -> c.drop(2));
+        add("drop3", c -> c.drop(3));
         add("swap", c -> c.swap());
         add("rot", c -> c.rot());
         add("rrot", c -> c.rrot());
