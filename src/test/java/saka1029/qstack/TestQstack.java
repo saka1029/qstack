@@ -406,10 +406,10 @@ public class TestQstack {
     public void testPermutations() {
         Context c = Context.of(50).output(System.out::println).trace(logger::info);
         c.run("'(@0 null? '^1 '(uncons @2 swap remove rot @2 == '^1 'cons if) if) 'remove define");
-        c.run("'(@1 null? '(@0 reverse print) '(@1 '(@0 @3 remove swap @2 cons perm drop) foreach) if drop2) 'perm define");
+        c.run("'(@1 null? '(@0 reverse print) '(@1 '(@0 @3 remove swap @2 cons perm drop2) foreach) if drop2) 'perm define");
         c.run("'('() perm) 'permutations define");
 //        c.run("'() permutations");
-        c.run("'(1) permutations");
-//        c.run("'(1 2 3) permutations");
+//        c.run("'(1) permutations");
+        c.run("'(1 2 3) permutations");
     }
 }
