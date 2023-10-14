@@ -110,6 +110,8 @@ public class Context {
     }
     
     public void drop(int count) {
+        if (sp < count)
+            throw new IllegalArgumentException("sp(" + sp + ") < count(" + count + ")");
         sp -= count;
     }
     

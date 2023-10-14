@@ -404,12 +404,25 @@ public class TestQstack {
      */
     @Test
     public void testPermutations() {
-        Context c = Context.of(50).output(System.out::println).trace(logger::info);
+        StringBuilder sb = new StringBuilder();
+        Context c = Context.of(50).output(sb::append);//.trace(logger::info);
         c.run("'(@0 null? '^1 '(uncons @2 swap remove rot @2 == '^1 'cons if) if) 'remove define");
-        c.run("'(@1 null? '(@0 reverse print) '(@1 '(@0 @3 remove swap @2 cons perm drop2) foreach) if drop2) 'perm define");
+        c.run("'(@1 null? '(@0 reverse print) '(@1 '(@0 @3 remove swap @2 cons perm) foreach) if drop2) 'perm define");
         c.run("'('() perm) 'permutations define");
-//        c.run("'() permutations");
-//        c.run("'(1) permutations");
+        sb.setLength(0);
+        c.run("'() permutations");
+        assertEquals("()", sb.toString());
+        sb.setLength(0);
+        c.run("'(1) permutations");
+        assertEquals("(1)", sb.toString());
+        sb.setLength(0);
         c.run("'(1 2 3) permutations");
+        assertEquals("(1 2 3)(1 3 2)(2 1 3)(2 3 1)(3 1 2)(3 2 1)", sb.toString());
+        sb.setLength(0);
+        c.run("'(1 2 3 4) permutations");
+        assertEquals("(1 2 3 4)(1 2 4 3)(1 3 2 4)(1 3 4 2)(1 4 2 3)(1 4 3 2)"
+                   + "(2 1 3 4)(2 1 4 3)(2 3 1 4)(2 3 4 1)(2 4 1 3)(2 4 3 1)"
+                   + "(3 1 2 4)(3 1 4 2)(3 2 1 4)(3 2 4 1)(3 4 1 2)(3 4 2 1)"
+                   + "(4 1 2 3)(4 1 3 2)(4 2 1 3)(4 2 3 1)(4 3 1 2)(4 3 2 1)", sb.toString());
     }
 }
