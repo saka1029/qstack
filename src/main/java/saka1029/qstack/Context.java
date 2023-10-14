@@ -129,7 +129,7 @@ public class Context {
         Element e;
         while ((e = reader.read()) != null)
             execute(e);
-        trace("  ".repeat(nest++) + this);
+        trace("  ".repeat(nest) + this);
     }
     
     public Element eval(String source) {

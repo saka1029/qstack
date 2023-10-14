@@ -405,7 +405,7 @@ public class TestQstack {
     @Test
     public void testPermutations() {
         StringBuilder sb = new StringBuilder();
-        Context c = Context.of(50).output(sb::append);//.trace(logger::info);
+        Context c = Context.of(50).output(sb::append).trace(logger::info);
         c.run("'(@0 null? '^1 '(uncons @2 swap remove rot @2 == '^1 'cons if) if) 'remove define");
         c.run("'(@1 null? '(@0 reverse print) '(@1 '(@0 @3 remove swap @2 cons perm) foreach) if drop2) 'perm define");
         c.run("'('() perm) 'permutations define");
