@@ -258,6 +258,18 @@ public class Context {
             c.push(array);
         });
         add("A-L", c -> c.push(List.of(((Array)c.pop()).array)));
+        // Blockの引数アクセス
+        add("A1", c -> c.push(stack[c.fp - 1]));
+        add("A2", c -> c.push(stack[c.fp - 2]));
+        add("A3", c -> c.push(stack[c.fp - 3]));
+        // Blockのローカル変数参照
+        add("L1", c -> c.push(stack[c.fp + 1]));
+        add("L2", c -> c.push(stack[c.fp + 2]));
+        add("L3", c -> c.push(stack[c.fp + 3]));
+        // Blockのローカル変数更新
+        add("S1", c -> stack[c.fp + 1] = c.pop());
+        add("S1", c -> stack[c.fp + 2] = c.pop());
+        add("S1", c -> stack[c.fp + 3] = c.pop());
     }
 
 }

@@ -14,7 +14,7 @@ public class TestQstack {
         
     @Test
     public void testFactRecursive() {
-        Context c = Context.of(10);
+        Context c = Context.of(9);
         c.run("'(@0 0 <= '(1 ^1) '(@0 1 - ! *) if) '! define");
         assertEquals(c.eval("1"), c.eval("0 !"));
         assertEquals(c.eval("1"), c.eval("1 !"));
@@ -22,6 +22,18 @@ public class TestQstack {
         assertEquals(c.eval("6"), c.eval("3 !"));
         assertEquals(c.eval("24"), c.eval("4 !"));
         assertEquals(c.eval("120"), c.eval("5 !"));
+    }
+
+    @Test
+    public void testFactFrame() {
+        Context c = Context.of(15);
+        c.run("'(1 1 : A1 0 <= 1 '(A1 1 - ! A1 *) if) '! define");
+        assertEquals(Int.of(1), c.eval("0 !"));
+        assertEquals(Int.of(1), c.eval("1 !"));
+        assertEquals(Int.of(2), c.eval("2 !"));
+        assertEquals(Int.of(6), c.eval("3 !"));
+        assertEquals(Int.of(24), c.eval("4 !"));
+        assertEquals(Int.of(120), c.eval("5 !"));
     }
 
     @Test
