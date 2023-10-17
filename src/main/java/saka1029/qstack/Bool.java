@@ -19,5 +19,4 @@ public class Bool implements Value {
 	public String toString() {
 		return Boolean.toString(value);
 	}
-
 }

@@ -15,6 +15,7 @@ public class Context {
 
     public final Element[] stack;
     public int sp = 0;
+    public int fp = 0;
     public final Map<Symbol, Element> globals = new HashMap<>();
     public Consumer<String> output = null;
     public Consumer<String> trace = null;
@@ -175,21 +176,21 @@ public class Context {
         add("execute", c -> c.execute(c.pop()));
         add("true", Bool.TRUE);
         add("false", Bool.FALSE);
-        add("and", c -> { Bool r = (Bool)c.pop(), l = (Bool)c.pop(); c.push(Bool.of(l.value & r.value)); });
-        add("or", c -> { Bool r = (Bool)c.pop(), l = (Bool)c.pop(); c.push(Bool.of(l.value | r.value)); });
-        add("xor", c -> { Bool r = (Bool)c.pop(), l = (Bool)c.pop(); c.push(Bool.of(l.value ^ r.value)); });
-        add("not", c -> { Bool b = (Bool)c.pop(); c.push(Bool.of(!b.value)); });
-        add("==", c -> { Element r = c.pop(), l = c.pop(); c.push(Bool.of(l.equals(r))); });
-        add("!=", c -> { Element r = c.pop(), l = c.pop(); c.push(Bool.of(!l.equals(r))); });
-        add("<", c -> { Ordered r = (Ordered)c.pop(), l = (Ordered)c.pop(); c.push(Bool.of(l.compareTo(r) < 0)); });
-        add("<=", c -> { Ordered r = (Ordered)c.pop(), l = (Ordered)c.pop(); c.push(Bool.of(l.compareTo(r) <= 0)); });
-        add(">", c -> { Ordered r = (Ordered)c.pop(), l = (Ordered)c.pop(); c.push(Bool.of(l.compareTo(r) > 0)); });
-        add(">=", c -> { Ordered r = (Ordered)c.pop(), l = (Ordered)c.pop(); c.push(Bool.of(l.compareTo(r) >= 0)); });
-        add("+", c -> { Int r = (Int)c.pop(), l = (Int)c.pop(); c.push(Int.of(l.value + r.value)); });
-        add("-", c -> { Int r = (Int)c.pop(), l = (Int)c.pop(); c.push(Int.of(l.value - r.value)); });
-        add("*", c -> { Int r = (Int)c.pop(), l = (Int)c.pop(); c.push(Int.of(l.value * r.value)); });
-        add("/", c -> { Int r = (Int)c.pop(), l = (Int)c.pop(); c.push(Int.of(l.value / r.value)); });
-        add("%", c -> { Int r = (Int)c.pop(), l = (Int)c.pop(); c.push(Int.of(l.value % r.value)); });
+        add("and", c -> c.push(Bool.of(((Bool)c.pop()).value & ((Bool)c.pop()).value)));
+        add("or", c -> c.push(Bool.of(((Bool)c.pop()).value | ((Bool)c.pop()).value)));
+        add("xor", c -> c.push(Bool.of(((Bool)c.pop()).value ^ ((Bool)c.pop()).value)));
+        add("not", c -> c.push(Bool.of(!((Bool)c.pop()).value)));
+        add("==", c -> c.push(Bool.of(c.pop().equals(c.pop()))));
+        add("!=", c -> c.push(Bool.of(!c.pop().equals(c.pop()))));
+        add("<", c -> c.push(Bool.of(((Ordered)c.pop()).compareTo((Ordered)c.pop()) > 0)));
+        add("<=", c -> c.push(Bool.of(((Ordered)c.pop()).compareTo((Ordered)c.pop()) >= 0)));
+        add(">", c -> c.push(Bool.of(((Ordered)c.pop()).compareTo((Ordered)c.pop()) < 0)));
+        add(">=", c -> c.push(Bool.of(((Ordered)c.pop()).compareTo((Ordered)c.pop()) <= 0)));
+        add("+", c -> c.push(Int.of(((Int)c.pop()).value + ((Int)c.pop()).value)));
+        add("-", c -> c.push(Int.of(-((Int)c.pop()).value + ((Int)c.pop()).value)));
+        add("*", c -> c.push(Int.of(((Int)c.pop()).value * ((Int)c.pop()).value)));
+        add("/", c -> { Int r = (Int)c.pop(); c.push(Int.of(((Int)c.pop()).value / r.value)); });
+        add("%", c -> { Int r = (Int)c.pop(); c.push(Int.of(((Int)c.pop()).value % r.value)); });
         add("car", c -> c.push(((Cons)c.pop()).car));
         add("cdr", c -> c.push(((Cons)c.pop()).cdr));
         add("cons", c -> { Element r = c.pop(), l = c.pop(); c.push(Cons.of(l, r)); });
@@ -199,7 +200,7 @@ public class Context {
         add("null?", c -> c.push(Bool.of(c.pop().equals(List.NIL))));
         add("list?", c -> c.push(Bool.of(c.pop() instanceof List)));
         add("length", c -> c.push(Int.of(((List)c.pop()).length())));
-        add("append", c -> { List right = (List)c.pop(); Element left = c.pop(); c.push(List.append(left, right)); });
+        add("append", c -> { List right = (List)c.pop(); c.push(List.append(c.pop(), right)); });
         add("reverse", c -> {
             List list = (List)c.pop();
             Element result = List.NIL;

@@ -17,11 +17,11 @@ class Int {
 class Bool {
   +boolean value
 }
+class Str {
+  +String value
+}
 interface List {
   {static} List NIL
-}
-class Cons {
-  +Element car, cdr
 }
 class Symbol {
   +String name
@@ -29,13 +29,20 @@ class Symbol {
 class Reader {
   +Element read()
 }
+class Block {
+  +int args, returns
+}
 Element <|-- Value
-Value <|-- List
+Cons --> Element : car
+Cons --> Element : cdr
+Element <|-- List
 Iterable <|-- List
 Value <|-- Ordered
 Comparable <|-- Ordered
 Ordered <|.. Int
 Ordered <|.. Bool
+Ordered <|.. Str
 List <|.. Cons
+Cons <|-- Block
 Element <|.. Symbol
 @enduml
