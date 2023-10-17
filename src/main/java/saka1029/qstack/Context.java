@@ -211,17 +211,12 @@ public class Context {
             Element orElse = c.pop(), then = c.pop();
             execute(((Bool)c.pop()).value ? then : orElse);
         });
-        add("define", c -> {
-            Symbol name = (Symbol)c.pop();
-            Element value = c.pop();
-            globals.put(name, value);
-        });
+        add("define", c -> globals.put((Symbol)c.pop(), c.pop()));
         add("foreach", c -> {
-            Element clause = c.pop();
-            List list = (List)c.pop();
-            for (Element e : list) {
+            Element body = c.pop();
+            for (Element e : (List)c.pop()) {
                 c.push(e);
-                c.execute(clause);
+                c.execute(body);
             }
         });
         add("for", c -> {
@@ -247,7 +242,7 @@ public class Context {
         add("array", c -> c.push(Array.of(((Int)c.pop()).value)));
         add("size", c -> c.push(Int.of(((Array)c.pop()).size())));
         add("get", c -> { int i = ((Int)c.pop()).value; Array a = (Array)c.pop(); c.push(a.get(i)); });
-        add("set", c -> { Element e = c.pop(); int i = ((Int)c.pop()).value; Array a = (Array)c.pop(); a.set(i, e); });
+        add("set", c -> { Element e = c.pop(); Array a = (Array)c.pop(); a.set(((Int)c.pop()).value, e); });
         add("L-A", c -> {
             List list = (List)c.pop();
             int length = list.length();
@@ -258,15 +253,15 @@ public class Context {
             c.push(array);
         });
         add("A-L", c -> c.push(List.of(((Array)c.pop()).array)));
-        // Blockの引数アクセス
+        // Frameの引数アクセス
         add("A1", c -> c.push(stack[c.fp - 1]));
         add("A2", c -> c.push(stack[c.fp - 2]));
         add("A3", c -> c.push(stack[c.fp - 3]));
-        // Blockのローカル変数参照
+        // Frameのローカル変数参照
         add("L1", c -> c.push(stack[c.fp + 1]));
         add("L2", c -> c.push(stack[c.fp + 2]));
         add("L3", c -> c.push(stack[c.fp + 3]));
-        // Blockのローカル変数更新
+        // Frameのローカル変数更新
         add("S1", c -> stack[c.fp + 1] = c.pop());
         add("S1", c -> stack[c.fp + 2] = c.pop());
         add("S1", c -> stack[c.fp + 3] = c.pop());
