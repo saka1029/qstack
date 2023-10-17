@@ -183,7 +183,7 @@ public class TestContext {
         StringBuilder sb = new StringBuilder();
         Context c = Context.of(10).output(sb::append);
         c.run("1 2 3 '𩸽 stack println print stack");
-        assertEquals("[1 2 3 𩸽]𩸽" + System.lineSeparator() + "3[1 2]", sb.toString());
+        assertEquals("[1 2 3 𩸽]𩸽%n3[1 2]".formatted(), sb.toString());
     }
     
     @Test
@@ -191,11 +191,7 @@ public class TestContext {
         StringBuilder sb = new StringBuilder();
         Context c = Context.of(10).trace(s -> sb.append(s).append("%n".formatted()));
         c.run("1 2 +");
-        assertEquals(
-            ("[] 1%n"
-            + "[1] 2%n"
-            + "[1 2] +%n"
-            + "[3]%n").formatted(), sb.toString());
+        assertEquals("[] 1%n[1] 2%n[1 2] +%n[3]%n".formatted(), sb.toString());
     }
     
     @Test
