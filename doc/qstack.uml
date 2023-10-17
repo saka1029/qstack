@@ -1,8 +1,9 @@
 @startuml
 class Context {
   Element[] stack
-  int sp
+  int sp, fp, nest
   Map<String, Element> globals
+  Consumer<String> output, trace
 }
 interface Element {
   +void execute(Context context)
