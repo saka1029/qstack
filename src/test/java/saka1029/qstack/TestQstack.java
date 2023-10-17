@@ -47,6 +47,18 @@ public class TestQstack {
         assertEquals(c.eval("24"), c.eval("4 !"));
         assertEquals(c.eval("120"), c.eval("5 !"));
     }
+
+    @Test
+    public void testFactFrameByFor() {
+        Context c = Context.of(10);
+        c.run("'(1 1 : 1 1 A1 1 '* for) '! define");
+        assertEquals(c.eval("1"), c.eval("0 !"));
+        assertEquals(c.eval("1"), c.eval("1 !"));
+        assertEquals(c.eval("2"), c.eval("2 !"));
+        assertEquals(c.eval("6"), c.eval("3 !"));
+        assertEquals(c.eval("24"), c.eval("4 !"));
+        assertEquals(c.eval("120"), c.eval("5 !"));
+    }
     
     /**
      * '(1 2) '(3 4) append
@@ -68,9 +80,29 @@ public class TestQstack {
     }
     
     @Test
+    public void testAppendFrame() {
+        Context c = Context.of(10);
+        c.run("'(2 1 : A2 null? 'A1 '(A2 uncons A1 append cons) if) 'my-append define");
+        assertEquals(c.eval("'(1 2 3 4)"), c.eval("'() '(1 2 3 4) my-append"));
+        assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(1) '(2 3 4) my-append"));
+        assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(1 2) '(3 4) my-append"));
+        assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(1 2 3) '(4) my-append"));
+    }
+    
+    @Test
     public void testReverseByForeach() {
         Context c = Context.of(10);
         c.run("'('() swap 'rcons foreach) 'my-reverse define");
+        assertEquals(c.eval("'()"), c.eval("'() my-reverse"));
+        assertEquals(c.eval("'(1)"), c.eval("'(1) my-reverse"));
+        assertEquals(c.eval("'(2 1)"), c.eval("'(1 2) my-reverse"));
+        assertEquals(c.eval("'(4 3 2 1)"), c.eval("'(1 2 3 4) my-reverse"));
+    }
+    
+    @Test
+    public void testReverseFrameByForeach() {
+        Context c = Context.of(10);
+        c.run("'(1 1 : '() A1 'rcons foreach) 'my-reverse define");
         assertEquals(c.eval("'()"), c.eval("'() my-reverse"));
         assertEquals(c.eval("'(1)"), c.eval("'(1) my-reverse"));
         assertEquals(c.eval("'(2 1)"), c.eval("'(1 2) my-reverse"));
