@@ -14,8 +14,7 @@ public class Context {
     static final Logger logger = Common.logger(Context.class);
 
     public final Element[] stack;
-    public int sp = 0;
-    public int fp = 0;
+    public int sp = 0, fp = 0;
     public final Map<Symbol, Element> globals = new HashMap<>();
     public Consumer<String> output = null;
     public Consumer<String> trace = null;

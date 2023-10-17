@@ -2,6 +2,7 @@ package saka1029.qstack;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 public class Reader {
@@ -39,10 +40,10 @@ public class Reader {
             get();
     }
 
-    List list() {
+    Element list() {
         get(); // skip '('
         spaces();
-        java.util.List<Element> list = new java.util.ArrayList<>();
+        ArrayList<Element> list = new ArrayList<>();
         while (ch != -1 && ch != ')' && ch != '.') {
             list.add(read());
             spaces();

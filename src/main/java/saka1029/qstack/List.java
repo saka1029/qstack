@@ -1,7 +1,7 @@
 package saka1029.qstack;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 public interface List extends Element, Iterable<Element> {
@@ -20,16 +20,28 @@ public interface List extends Element, Iterable<Element> {
         return result;
     }
 
-    public static List of(java.util.List<Element> elements, Element tail) {
-        ListIterator<Element> i = elements.listIterator(elements.size());
-        if (!i.hasPrevious())
+    public static Element of(ArrayList<Element> elements, Element tail) {
+        int size = elements.size();
+        if (size == 0)
             if (tail == NIL)
                 return NIL;
             else
                 throw new IllegalArgumentException("Empty elements");
-        Cons result = Cons.of(i.previous(), tail);
-        while (i.hasPrevious())
-            result = Cons.of(i.previous(), result);
+        int args = -1, returns = -1;
+        if  (size >= 3
+            && elements.get(0) instanceof Int a
+            && elements.get(1) instanceof Int r
+            && elements.get(2).equals(Symbol.of(":"))) {
+            args = a.value;
+            returns = r.value;
+        }
+        Element result = tail, first = elements.get(0);
+        for (int i = size - 1; i > 0; --i)
+            result = Cons.of(elements.get(i), result);
+        if (args >= 0)
+            result = Block.of(args, returns, first, result);
+        else
+            result =  Cons.of(first, result);
         return result;
     }
     
