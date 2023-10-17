@@ -119,7 +119,7 @@ public class Context {
      * スタックトップを残して、n個の要素をドロップする。
      * [1 2 3 4] : exit(2) -> [1 4]
      */
-    public void exit(int n) {
+    public void unwind(int n) {
         stack[sp - n - 1] = stack[sp - 1];
         sp -= n;
     }
@@ -162,10 +162,10 @@ public class Context {
         add("@2", c -> c.dup(2));
         add("@3", c -> c.dup(3));
         add("@4", c -> c.dup(4));
-        add("^1", c -> c.exit(1));
-        add("^2", c -> c.exit(2));
-        add("^3", c -> c.exit(3));
-        add("^4", c -> c.exit(4));
+        add("^1", c -> c.unwind(1));
+        add("^2", c -> c.unwind(2));
+        add("^3", c -> c.unwind(3));
+        add("^4", c -> c.unwind(4));
         add("drop", c -> c.drop());
         add("drop2", c -> c.drop(2));
         add("drop3", c -> c.drop(3));
