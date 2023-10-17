@@ -7,6 +7,7 @@ class Context {
 interface Element {
   +void execute(Context context)
 }
+interface Traceable
 interface Value
 interface Ordered
 interface Comparable<Element>
@@ -20,6 +21,9 @@ class Bool {
 class Str {
   +String value
 }
+class Array {
+  +Element[] array
+}
 interface List {
   {static} List NIL
 }
@@ -32,17 +36,19 @@ class Reader {
 class Block {
   +int args, returns
 }
-Element <|-- Value
+Element <|-- Traceable
+Traceable <|-- Value
 Cons --> Element : car
 Cons --> Element : cdr
-Element <|-- List
+Traceable <|-- List
 Iterable <|-- List
 Value <|-- Ordered
 Comparable <|-- Ordered
 Ordered <|.. Int
 Ordered <|.. Bool
 Ordered <|.. Str
+Value <|.. Array
 List <|.. Cons
 Cons <|-- Block
-Element <|.. Symbol
+Traceable <|.. Symbol
 @enduml

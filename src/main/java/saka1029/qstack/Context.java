@@ -50,7 +50,7 @@ public class Context {
     }
 
     public void execute(Element e) {
-        boolean t = e instanceof Symbol;
+        boolean t = e instanceof Traceable;
         if (t)
             trace("  ".repeat(nest++) + this + " " + e);
         e.execute(this);
@@ -241,8 +241,8 @@ public class Context {
         
         add("array", c -> c.push(Array.of(((Int)c.pop()).value)));
         add("size", c -> c.push(Int.of(((Array)c.pop()).size())));
-        add("get", c -> { int i = ((Int)c.pop()).value; Array a = (Array)c.pop(); c.push(a.get(i)); });
-        add("set", c -> { Element e = c.pop(); Array a = (Array)c.pop(); a.set(((Int)c.pop()).value, e); });
+        add("get", c -> { int i = ((Int)c.pop()).value; c.push(((Array)c.pop()).get(i)); });
+        add("set", c -> { Element e = c.pop(); int i = ((Int)c.pop()).value; ((Array)c.pop()).set(i, e); });
         add("L-A", c -> {
             List list = (List)c.pop();
             int length = list.length();
@@ -257,6 +257,9 @@ public class Context {
         add("A1", c -> c.push(stack[c.fp - 1]));
         add("A2", c -> c.push(stack[c.fp - 2]));
         add("A3", c -> c.push(stack[c.fp - 3]));
+        add("A4", c -> c.push(stack[c.fp - 4]));
+        add("A5", c -> c.push(stack[c.fp - 5]));
+        add("A6", c -> c.push(stack[c.fp - 6]));
         // Frameのローカル変数参照
         add("L1", c -> c.push(stack[c.fp + 1]));
         add("L2", c -> c.push(stack[c.fp + 2]));

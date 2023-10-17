@@ -26,7 +26,7 @@ public class TestQstack {
 
     @Test
     public void testFactFrame() {
-        Context c = Context.of(15);
+        Context c = Context.of(15);//.trace(logger::info);
         c.run("'(1 1 : A1 0 <= 1 '(A1 1 - ! A1 *) if) '! define");
         assertEquals(Int.of(1), c.eval("0 !"));
         assertEquals(Int.of(1), c.eval("1 !"));
@@ -50,7 +50,7 @@ public class TestQstack {
 
     @Test
     public void testFactFrameByFor() {
-        Context c = Context.of(10);
+        Context c = Context.of(10);//.trace(logger::info);
         c.run("'(1 1 : 1 1 A1 1 '* for) '! define");
         assertEquals(c.eval("1"), c.eval("0 !"));
         assertEquals(c.eval("1"), c.eval("1 !"));

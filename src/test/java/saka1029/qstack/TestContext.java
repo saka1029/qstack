@@ -180,8 +180,22 @@ public class TestContext {
     
     @Test
     public void testPrint() {
-        Context c = Context.of(10).output(System.out::print).trace(logger::info);
+        StringBuilder sb = new StringBuilder();
+        Context c = Context.of(10).output(sb::append);
         c.run("1 2 3 '𩸽 stack println print stack");
+        assertEquals("[1 2 3 𩸽]𩸽" + System.lineSeparator() + "3[1 2]", sb.toString());
+    }
+    
+    @Test
+    public void testTrace() {
+        StringBuilder sb = new StringBuilder();
+        Context c = Context.of(10).trace(s -> sb.append(s).append("%n".formatted()));
+        c.run("1 2 +");
+        assertEquals(
+            ("[] 1%n"
+            + "[1] 2%n"
+            + "[1 2] +%n"
+            + "[3]%n").formatted(), sb.toString());
     }
     
     @Test
@@ -198,7 +212,7 @@ public class TestContext {
     
     @Test
     public void testToArray() {
-        Context c = Context.of(5).output(logger::info);
+        Context c = Context.of(5);//.trace(logger::info);
         assertEquals(c.eval("3 array @0 1 1 set @0 2 2 set @0 3 3 set"), c.eval("'(1 2 3) L-A"));
     }
 

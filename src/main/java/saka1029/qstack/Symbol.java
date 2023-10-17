@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class Symbol implements Element {
+public class Symbol implements Traceable {
 	
     static final Map<String, Symbol> symbols = new HashMap<>();
 	public final String name;

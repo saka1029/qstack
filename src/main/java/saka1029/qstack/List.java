@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public interface List extends Element, Iterable<Element> {
+public interface List extends Traceable, Iterable<Element> {
     
     public static final List NIL = new List() {
         @Override
