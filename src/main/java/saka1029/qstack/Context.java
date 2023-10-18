@@ -264,8 +264,8 @@ public class Context {
         add("L3", c -> c.push(stack[c.fp + 4]));
         // Frameのローカル変数更新
         add("S1", c -> stack[c.fp + 2] = c.pop());
-        add("S1", c -> stack[c.fp + 3] = c.pop());
-        add("S1", c -> stack[c.fp + 4] = c.pop());
+        add("S2", c -> stack[c.fp + 3] = c.pop());
+        add("S3", c -> stack[c.fp + 4] = c.pop());
         add("self", c -> c.execute(stack[c.fp + 1]));
     }
 
