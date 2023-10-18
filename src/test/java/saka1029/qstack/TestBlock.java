@@ -39,4 +39,22 @@ public class TestBlock {
         assertEquals(Int.of(120), c.eval("5 !"));
     }
 
+    @Test
+    public void testSelf() {
+        Context c = Context.of(40);
+        c.run("'(1 1 : A1 0 <= 1 '(A1 1 - self A1 *) if) '! define");
+        assertEquals(Int.of(1), c.eval("0 !"));
+        assertEquals(Int.of(1), c.eval("1 !"));
+        assertEquals(Int.of(2), c.eval("2 !"));
+        assertEquals(Int.of(6), c.eval("3 !"));
+        assertEquals(Int.of(24), c.eval("4 !"));
+        assertEquals(Int.of(120), c.eval("5 !"));
+    }
+    
+    @Test
+    public void testImmediatelyExecuteRecursiveFunction() {
+        Context c = Context.of(40);
+        assertEquals(Int.of(120), c.eval("5 (1 1 : A1 0 <= 1 '(A1 A1 1 - self *) if)"));
+    }
+
 }
