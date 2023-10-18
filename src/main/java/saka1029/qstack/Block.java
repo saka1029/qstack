@@ -25,6 +25,7 @@ public class Block extends Cons {
     public void execute(Context context) {
         context.push(Int.of(context.fp));   // save fp
         context.fp = context.sp - 1;        // set new fp
+        context.push(this);                 // push self
         for (Element e : this)
             context.execute(e);
         int end = context.sp, start = end - returns; // 戻り値の先頭と末尾

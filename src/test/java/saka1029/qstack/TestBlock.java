@@ -27,7 +27,7 @@ public class TestBlock {
 
     @Test
     public void testExecute() {
-        Context c = Context.of(20);
+        Context c = Context.of(25);
         assertEquals(Int.THREE, c.eval("1 2 (2 1 : A2 A1 +)"));
         assertEquals(Int.THREE, c.eval("1 2 +"));
         c.run("'(1 1 : A1 0 <= 1 '(A1 1 - ! A1 *) if) '! define");

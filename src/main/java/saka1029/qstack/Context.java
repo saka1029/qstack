@@ -259,13 +259,14 @@ public class Context {
         add("A5", c -> c.push(stack[c.fp - 5]));
         add("A6", c -> c.push(stack[c.fp - 6]));
         // Frameのローカル変数参照
-        add("L1", c -> c.push(stack[c.fp + 1]));
-        add("L2", c -> c.push(stack[c.fp + 2]));
-        add("L3", c -> c.push(stack[c.fp + 3]));
+        add("L1", c -> c.push(stack[c.fp + 2]));
+        add("L2", c -> c.push(stack[c.fp + 3]));
+        add("L3", c -> c.push(stack[c.fp + 4]));
         // Frameのローカル変数更新
-        add("S1", c -> stack[c.fp + 1] = c.pop());
         add("S1", c -> stack[c.fp + 2] = c.pop());
         add("S1", c -> stack[c.fp + 3] = c.pop());
+        add("S1", c -> stack[c.fp + 4] = c.pop());
+        add("self", c -> c.execute(stack[c.fp + 1]));
     }
 
 }

@@ -26,8 +26,20 @@ public class TestQstack {
 
     @Test
     public void testFactFrame() {
-        Context c = Context.of(15);//.trace(logger::info);
+        Context c = Context.of(25);//.trace(logger::info);
         c.run("'(1 1 : A1 0 <= 1 '(A1 1 - ! A1 *) if) '! define");
+        assertEquals(Int.of(1), c.eval("0 !"));
+        assertEquals(Int.of(1), c.eval("1 !"));
+        assertEquals(Int.of(2), c.eval("2 !"));
+        assertEquals(Int.of(6), c.eval("3 !"));
+        assertEquals(Int.of(24), c.eval("4 !"));
+        assertEquals(Int.of(120), c.eval("5 !"));
+    }
+
+    @Test
+    public void testFactFrameSelf() {
+        Context c = Context.of(25);//.trace(logger::info);
+        c.run("'(1 1 : A1 0 <= 1 '(A1 1 - self A1 *) if) '! define");
         assertEquals(Int.of(1), c.eval("0 !"));
         assertEquals(Int.of(1), c.eval("1 !"));
         assertEquals(Int.of(2), c.eval("2 !"));
@@ -83,6 +95,16 @@ public class TestQstack {
     public void testAppendFrame() {
         Context c = Context.of(10);
         c.run("'(2 1 : A2 null? 'A1 '(A2 uncons A1 append cons) if) 'my-append define");
+        assertEquals(c.eval("'(1 2 3 4)"), c.eval("'() '(1 2 3 4) my-append"));
+        assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(1) '(2 3 4) my-append"));
+        assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(1 2) '(3 4) my-append"));
+        assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(1 2 3) '(4) my-append"));
+    }
+    
+    @Test
+    public void testAppendFrameSelf() {
+        Context c = Context.of(25);
+        c.run("'(2 1 : A2 null? 'A1 '(A2 uncons A1 self cons) if) 'my-append define");
         assertEquals(c.eval("'(1 2 3 4)"), c.eval("'() '(1 2 3 4) my-append"));
         assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(1) '(2 3 4) my-append"));
         assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(1 2) '(3 4) my-append"));
