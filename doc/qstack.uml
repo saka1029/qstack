@@ -28,6 +28,7 @@ class Array {
 interface List {
   {static} List NIL
 }
+class Quote
 class Symbol {
   +String name
 }
@@ -41,9 +42,11 @@ Element <|-- Traceable
 Traceable <|-- Value
 Cons --> Element : car
 Cons --> Element : cdr
+Quote --> Element : value
 Traceable <|-- List
 Iterable <|-- List
 Value <|-- Ordered
+Value <|.. Quote
 Comparable <|-- Ordered
 Ordered <|.. Int
 Ordered <|.. Bool
