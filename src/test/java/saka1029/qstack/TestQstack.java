@@ -152,6 +152,18 @@ public class TestQstack {
         assertEquals(c.eval("'(4 3 2 1)"), c.eval("'(1 2 3 4) my-reverse"));
     }
 
+    @Test
+    public void testReverseRecursiveFrame() {
+        Context c = Context.of(28);
+        // A2=(1 2 3) A1=()
+        c.run("'(2 1 : A2 null? 'A1 '(A2 uncons swap A1 cons self) if) 'my-reverse2 define");
+        c.run("'('() my-reverse2) 'my-reverse define");
+        assertEquals(c.eval("'()"), c.eval("'() my-reverse"));
+        assertEquals(c.eval("'(1)"), c.eval("'(1) my-reverse"));
+        assertEquals(c.eval("'(2 1)"), c.eval("'(1 2) my-reverse"));
+        assertEquals(c.eval("'(4 3 2 1)"), c.eval("'(1 2 3 4) my-reverse"));
+    }
+
     /**
      * (1 2 3) reverse
      * (1 2 3) : uncons
