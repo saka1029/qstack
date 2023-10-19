@@ -266,6 +266,15 @@ public class Context {
         add("S1", c -> stack[c.fp + 2] = c.pop());
         add("S2", c -> stack[c.fp + 3] = c.pop());
         add("S3", c -> stack[c.fp + 4] = c.pop());
+        // Frameのローカル手続き実行
+        // 'X1はローカル手続きをスタックにpushするが、
+        // その手続きはfp相対で定義されたものであり、
+        // executeされる場所によっては正しく動作しない。
+        // ローカル手続きをスタックにpushするのであれば'X1ではなくL1を使用すべきである。
+        // 紛らわしいのでX1をやめてL1 executeを使用すべき。
+//        add("X1", c -> c.execute(stack[c.fp + 2]));
+//        add("X2", c -> c.execute(stack[c.fp + 3]));
+//        add("X3", c -> c.execute(stack[c.fp + 4]));
         add("self", c -> c.execute(stack[c.fp + 1]));
     }
 

@@ -1,12 +1,19 @@
 package saka1029.qstack;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 import org.junit.Test;
 
+import saka1029.Common;
+
 public class TestBlock {
+    
+    static final Logger logger = Common.logger(TestBlock.class);
 
     @Test
     public void testRead() {
@@ -71,6 +78,30 @@ public class TestBlock {
     public void testImmediatelyExecuteRecursiveFunction() {
         Context c = Context.of(40);
         assertEquals(Int.of(120), c.eval("5 (1 1 : A1 0 <= 1 '(A1 A1 1 - self *) if)"));
+    }
+    
+    /**
+     * <pre>
+     * f(n) {
+     *     inc(x) {
+     *         return x + 1;
+     *     }
+     *     return inc(inc(n));
+     * }
+     * f(5)
+     * </pre>
+     * 
+     * 'X1はローカル手続きをスタックにpushするが、
+     * その手続きはfp相対で定義されたものであり、
+     * executeされる場所によっては正しく動作しない。
+     * ローカル手続きをスタックにpushするのであれば'X1ではなくL1を使用すべきである。
+     * 紛らわしいのでX1をやめてL1 executeを使用すべきか？
+     */
+    @Test
+    public void testLocalFunction() {
+        Context c = Context.of(40);//.trace(logger::info);
+//        assertEquals(Int.of(7), c.eval("5 (1 1 : '(1 +) A1 X1 X1)"));
+        assertEquals(Int.of(7), c.eval("5 (1 1 : '(1 +) A1 L1 execute L1 execute)"));
     }
 
 }
