@@ -291,6 +291,14 @@ public class TestQstack {
     }
     
     @Test
+    public void testFilterRecursiveFromFirstFrame() {
+        Context c = Context.of(35);
+        c.run("'(2 1 : A2 null? ''() '(A2 car @0 A1 execute A2 cdr A1 self swap 'cons '^1 if) if) 'filter define");
+        assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
+        assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
+    }
+    
+    @Test
     public void testFilterByForeachAndReverse() {
         Context c = Context.of(20);
         c.run("'(swap '() swap '(@0 @3 execute 'rcons 'drop if) foreach ^1 reverse) 'filter define");
