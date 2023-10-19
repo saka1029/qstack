@@ -40,6 +40,12 @@ public class TestBlock {
         Context c = Context.of(25);
         assertEquals(Int.THREE, c.eval("1 2 (2 1 : A2 A1 +)"));
         assertEquals(Int.THREE, c.eval("1 2 +"));
+        c.run("1 2 3 (1 2 : 3 4 5 6)");
+        assertEquals(4, c.sp);
+        assertEquals(Int.of(6), c.pop());
+        assertEquals(Int.of(5), c.pop());
+        assertEquals(Int.of(2), c.pop());
+        assertEquals(Int.of(1), c.pop());
         c.run("'(1 1 : A1 0 <= 1 '(A1 1 - ! A1 *) if) '! define");
         assertEquals(Int.of(1), c.eval("0 !"));
         assertEquals(Int.of(1), c.eval("1 !"));
