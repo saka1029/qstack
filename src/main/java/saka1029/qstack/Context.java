@@ -16,7 +16,7 @@ public class Context {
     public final Element[] stack;
     public int sp = 0, fp = 0, nest = 0;
     public final Map<Symbol, Element> globals = new HashMap<>();
-    public Consumer<String> output = null, trace = null;
+    public Consumer<String> output = System.out::println, trace = null;
 
     Context(int stackSize) {
         this.stack = new Element[stackSize];
@@ -113,13 +113,6 @@ public class Context {
         sp -= count;
     }
     
-    public int fp(int nest) {
-        int r = fp;
-        while (nest-- > 0)
-            r = ((Int)stack[r]).value;
-        return r;
-    }
-    
     /**
      * スタックトップを残して、n個の要素をドロップする。
      * [1 2 3 4] : exit(2) -> [1 4]
@@ -127,6 +120,21 @@ public class Context {
     public void unwind(int n) {
         stack[sp - n - 1] = stack[sp - 1];
         sp -= n;
+    }
+    
+    public int fp(int nest) {
+        int index = fp;
+        while (nest-- > 0)
+            index = ((Int)stack[index]).value;
+        return index;
+    }
+    
+    public void load(int nest, int offset) {
+        push(stack[fp(nest) + offset]);
+    }
+    
+    public void store(int nest, int offset) {
+        stack[fp(nest) + offset] = pop();
     }
 
     public void run(String source) {
@@ -260,35 +268,35 @@ public class Context {
         });
         add("A-L", c -> c.push(List.of(((Array)c.pop()).array)));
         // Frameの引数アクセス
-        add("A1", c -> c.push(stack[c.fp - 1]));
-        add("A2", c -> c.push(stack[c.fp - 2]));
-        add("A3", c -> c.push(stack[c.fp - 3]));
-        add("A4", c -> c.push(stack[c.fp - 4]));
-        add("A5", c -> c.push(stack[c.fp - 5]));
-        add("A6", c -> c.push(stack[c.fp - 6]));
-        // Frameの引数アクセス
-        add("1A1", c -> c.push(stack[fp(1) - 1]));
-        add("1A2", c -> c.push(stack[fp(1) - 2]));
-        add("1A3", c -> c.push(stack[fp(1) - 3]));
-        add("1A4", c -> c.push(stack[fp(1) - 4]));
-        add("1A5", c -> c.push(stack[fp(1) - 5]));
-        add("1A6", c -> c.push(stack[fp(1) - 6]));
+        add("A1", c -> c.load(0, -1));
+        add("A2", c -> c.load(0, -2));
+        add("A3", c -> c.load(0, -3));
+        add("A4", c -> c.load(0, -4));
+        add("A5", c -> c.load(0, -5));
+        add("A6", c -> c.load(0, -6));
+        // Frameのnest引数アクセス
+        add("1A1", c -> c.load(1, -1));
+        add("1A2", c -> c.load(1, -2));
+        add("1A3", c -> c.load(1, -3));
+        add("1A4", c -> c.load(1, -4));
+        add("1A5", c -> c.load(1, -5));
+        add("1A6", c -> c.load(1, -6));
         // Frameのローカル変数参照
-        add("L1", c -> c.push(stack[c.fp + 2]));
-        add("L2", c -> c.push(stack[c.fp + 3]));
-        add("L3", c -> c.push(stack[c.fp + 4]));
+        add("L1", c -> c.load(0, 2));
+        add("L2", c -> c.load(0, 3));
+        add("L3", c -> c.load(0, 4));
         // Frameのローカル変数更新
-        add("S1", c -> stack[c.fp + 2] = c.pop());
-        add("S2", c -> stack[c.fp + 3] = c.pop());
-        add("S3", c -> stack[c.fp + 4] = c.pop());
+        add("S1", c -> c.store(0, 2));
+        add("S2", c -> c.store(0, 3));
+        add("S3", c -> c.store(0, 4));
         // Frameのnest1ローカル変数参照
-        add("1L1", c -> c.push(stack[fp(1) + 2]));
-        add("1L2", c -> c.push(stack[fp(1) + 3]));
-        add("1L3", c -> c.push(stack[fp(1) + 4]));
+        add("1L1", c -> c.load(1, 2));
+        add("1L2", c -> c.load(1, 3));
+        add("1L3", c -> c.load(1, 4));
         // Frameのnest1ローカル変数更新
-        add("1S1", c -> stack[fp(1) + 2] = c.pop());
-        add("1S2", c -> stack[fp(1) + 3] = c.pop());
-        add("1S3", c -> stack[fp(1) + 4] = c.pop());
+        add("1S1", c -> c.store(1, 2));
+        add("1S2", c -> c.store(1, 3));
+        add("1S3", c -> c.store(1, 4));
         // Frameのローカル手続き実行
         // 'X1はローカル手続きをスタックにpushするが、
         // その手続きはfp相対で定義されたものであり、

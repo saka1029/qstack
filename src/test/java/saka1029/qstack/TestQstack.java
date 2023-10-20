@@ -372,12 +372,12 @@ public class TestQstack {
         c.run("'@0 '* '() cons cons 'square define");
         assertEquals(c.eval("9"), c.eval("3 square"));
         c.run("'(@0 list? 'cons '('() cons cons) if) 'compound define");
-        assertEquals(c.eval("9"), c.eval("3 '@0 '* compound stack execute"));
+        assertEquals(c.eval("9"), c.eval("3 '@0 '* compound execute"));
         assertEquals(c.eval("9"), c.eval("2 '(1 +) '@0 '* compound compound execute"));
         c.run("'(1 +) 'inc define");
         assertEquals(c.eval("9"), c.eval("2 'inc '@0 '* compound compound execute"));
         assertEquals(c.eval("9"), c.eval("2 'inc '@0 '* compound compound compound execute"));
-        c.run("'inc '@0 '* compound compound '1+^2 stack define");
+        c.run("'inc '@0 '* compound compound '1+^2 define");
         assertEquals(c.eval("9"), c.eval("2 1+^2 execute"));
     }
     
