@@ -324,6 +324,15 @@ public class TestQstack {
         assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
         assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
     }
+
+//    @Test
+    public void testFilterByForeachAndReverseFrameNest() {
+        Context c = Context.of(40);
+        c.add("1A1", x -> c.push(x.stack[((Int)x.stack[c.fp]).value - 1]));
+        c.run("'(2 1 : '() A2 '(1 0 : A2 A1 1A1 execute 'rcons 'drop if) foreach reverse) 'filter define");
+        assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
+        assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
+    }
     
     /**
      * filter-predicateは述語(E->B)をフィルター用の述語に変換する高階関数。
