@@ -290,6 +290,10 @@ public class TestQstack {
         assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
     }
     
+    /**
+     * '()はexecuteするとNOPとなるが、''()はNILをpushする。
+     * 以下の場合は戻り値としてNILを返す必要があるので、'()ではなく''（）とする必要がある。
+     */
     @Test
     public void testFilterRecursiveFromFirstFrame() {
         Context c = Context.of(35);
