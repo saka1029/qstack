@@ -302,10 +302,25 @@ public class TestQstack {
         assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
     }
     
+    /**
+     * (0 1 2 3) (2 % 0 ==) filter
+     * (0 1 2 3) (2 % 0 ==) : swap
+     * (2 % 0 ==) (0 1 2 3) : '()
+     * (2 % 0 ==) (0 1 2 3) ()  : swap
+     * (2 % 0 ==) () (0 1 2 3) : '(@0 @3 execute 'rcons 'drop if) foreach
+     */
     @Test
     public void testFilterByForeachAndReverse() {
         Context c = Context.of(20);
         c.run("'(swap '() swap '(@0 @3 execute 'rcons 'drop if) foreach ^1 reverse) 'filter define");
+        assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
+        assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
+    }
+
+    @Test
+    public void testFilterByForeachAndReverseFrame() {
+        Context c = Context.of(40);
+        c.run("'(2 1 : '() A2 '(@0 A1 execute 'rcons 'drop if) foreach reverse) 'filter define");
         assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
         assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
     }
