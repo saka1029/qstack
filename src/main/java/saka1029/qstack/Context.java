@@ -113,6 +113,13 @@ public class Context {
         sp -= count;
     }
     
+    public int fp(int nest) {
+        int r = fp;
+        while (nest-- > 0)
+            r = ((Int)stack[r]).value;
+        return r;
+    }
+    
     /**
      * スタックトップを残して、n個の要素をドロップする。
      * [1 2 3 4] : exit(2) -> [1 4]
@@ -259,6 +266,13 @@ public class Context {
         add("A4", c -> c.push(stack[c.fp - 4]));
         add("A5", c -> c.push(stack[c.fp - 5]));
         add("A6", c -> c.push(stack[c.fp - 6]));
+        // Frameの引数アクセス
+        add("1A1", c -> c.push(stack[fp(1) - 1]));
+        add("1A2", c -> c.push(stack[fp(1) - 2]));
+        add("1A3", c -> c.push(stack[fp(1) - 3]));
+        add("1A4", c -> c.push(stack[fp(1) - 4]));
+        add("1A5", c -> c.push(stack[fp(1) - 5]));
+        add("1A6", c -> c.push(stack[fp(1) - 6]));
         // Frameのローカル変数参照
         add("L1", c -> c.push(stack[c.fp + 2]));
         add("L2", c -> c.push(stack[c.fp + 3]));
@@ -267,6 +281,14 @@ public class Context {
         add("S1", c -> stack[c.fp + 2] = c.pop());
         add("S2", c -> stack[c.fp + 3] = c.pop());
         add("S3", c -> stack[c.fp + 4] = c.pop());
+        // Frameのnest1ローカル変数参照
+        add("1L1", c -> c.push(stack[fp(1) + 2]));
+        add("1L2", c -> c.push(stack[fp(1) + 3]));
+        add("1L3", c -> c.push(stack[fp(1) + 4]));
+        // Frameのnest1ローカル変数更新
+        add("1S1", c -> stack[fp(1) + 2] = c.pop());
+        add("1S2", c -> stack[fp(1) + 3] = c.pop());
+        add("1S3", c -> stack[fp(1) + 4] = c.pop());
         // Frameのローカル手続き実行
         // 'X1はローカル手続きをスタックにpushするが、
         // その手続きはfp相対で定義されたものであり、
