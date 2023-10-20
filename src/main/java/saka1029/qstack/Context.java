@@ -275,12 +275,12 @@ public class Context {
         add("A5", c -> c.load(0, -5));
         add("A6", c -> c.load(0, -6));
         // Frameのnest引数アクセス
-        add("1A1", c -> c.load(1, -1));
-        add("1A2", c -> c.load(1, -2));
-        add("1A3", c -> c.load(1, -3));
-        add("1A4", c -> c.load(1, -4));
-        add("1A5", c -> c.load(1, -5));
-        add("1A6", c -> c.load(1, -6));
+        add("A11", c -> c.load(1, -1));
+        add("A21", c -> c.load(1, -2));
+        add("A31", c -> c.load(1, -3));
+        add("A41", c -> c.load(1, -4));
+        add("A51", c -> c.load(1, -5));
+        add("A61", c -> c.load(1, -6));
         // Frameのローカル変数参照
         add("L1", c -> c.load(0, 2));
         add("L2", c -> c.load(0, 3));
@@ -290,13 +290,13 @@ public class Context {
         add("S2", c -> c.store(0, 3));
         add("S3", c -> c.store(0, 4));
         // Frameのnest1ローカル変数参照
-        add("1L1", c -> c.load(1, 2));
-        add("1L2", c -> c.load(1, 3));
-        add("1L3", c -> c.load(1, 4));
+        add("L11", c -> c.load(1, 2));
+        add("L21", c -> c.load(1, 3));
+        add("L31", c -> c.load(1, 4));
         // Frameのnest1ローカル変数更新
-        add("1S1", c -> c.store(1, 2));
-        add("1S2", c -> c.store(1, 3));
-        add("1S3", c -> c.store(1, 4));
+        add("S11", c -> c.store(1, 2));
+        add("S21", c -> c.store(1, 3));
+        add("S31", c -> c.store(1, 4));
         // Frameのローカル手続き実行
         // 'X1はローカル手続きをスタックにpushするが、
         // その手続きはfp相対で定義されたものであり、

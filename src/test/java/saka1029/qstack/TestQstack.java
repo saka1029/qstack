@@ -332,7 +332,7 @@ public class TestQstack {
     @Test
     public void testFilterByForeachAndReverseFrameNest() {
         Context c = Context.of(40);
-        c.run("'(2 1 : '() A2 '(1 0 : A1 1A1 execute '(A1 1L1 cons 1S1) '() if) foreach reverse) 'filter define");
+        c.run("'(2 1 : '() A2 '(1 0 : A1 A11 execute '(A1 L11 cons S11) '() if) foreach reverse) 'filter define");
         assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
         assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
     }
