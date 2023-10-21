@@ -329,6 +329,18 @@ public class TestQstack {
         return ((Int)e).value;
     }
 
+    /**
+     * <pre>
+     * filter(A2, A1) {
+     *     L1 = '()
+     *     foreach (e : A2) {
+     *         if (A1(e)) {
+     *             L1 = cons(e, L1)
+     *         }
+     *     return reverse(L1)
+     * }
+     * </pre>
+     */
     @Test
     public void testFilterByForeachAndReverseFrameNest() {
         Context c = Context.of(40);
