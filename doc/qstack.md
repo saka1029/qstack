@@ -36,7 +36,7 @@ A1のアドレスはstack[fp - 1]です。
 
 書式:
 
-** (F r A<sub>n</sub> A<sub>n-1</sub> ... A<sub>1</sub> : W<sub>1</sub> W<sub>2</sub> ... ) **
+**(F r A<sub>n</sub> A<sub>n-1</sub> ... A<sub>1</sub> : W<sub>1</sub> W<sub>2</sub> ... )**
 
 - F : 名前付きフレームマーカー
 - r : 戻り値の数
