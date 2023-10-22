@@ -36,11 +36,9 @@ A1のアドレスはstack[fp - 1]です。
 
 書式:
 
-**(F r A<sub>n</sub> A<sub>n-1</sub> ... A<sub>1</sub> : W<sub>1</sub> W<sub>2</sub> ... )**
+(F r A<sub>n</sub> ... A<sub>2</sub> A<sub>1</sub> : W<sub>1</sub> W<sub>2</sub> ... )
 
 - F : 名前付きフレームマーカー
 - r : 戻り値の数
 - A<sub>n</sub> : 仮引数名
 - W<sub>m</sub> : ワード
-
-$`\sqrt{3x+1}`$
