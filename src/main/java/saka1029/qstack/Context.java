@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -137,11 +139,27 @@ public class Context {
         stack[fp(nest) + offset] = pop();
     }
 
+    static final Pattern CLASS_CAST_EXCEPTION = Pattern.compile(
+        "class \\S*\\.(\\S+) cannot be cast to class \\S*\\.(\\S+).*");
+    
+    static RuntimeException error(ClassCastException e) {
+        Matcher m = CLASS_CAST_EXCEPTION.matcher(e.getMessage());
+        if (m.find())
+            return new RuntimeException("Cast error "
+                + m.group(1) + " to " + m.group(2), e);
+        else
+            return new RuntimeException(e);
+    }
+
     public void run(String source) {
         Reader reader = Reader.of(source);
         Element e;
         while ((e = reader.read()) != null)
-            execute(e);
+            try {
+                execute(e);
+            } catch (ClassCastException ex) {
+                throw error(ex);
+            }
         trace("  ".repeat(nest) + this);
     }
     
