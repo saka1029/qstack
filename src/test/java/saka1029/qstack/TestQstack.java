@@ -15,13 +15,13 @@ public class TestQstack {
     @Test
     public void testFactRecursive() {
         Context c = Context.of(9);
-        c.run("'(@0 0 <= '(1 ^1) '(@0 1 - ! *) if) '! define");
-        assertEquals(c.eval("1"), c.eval("0 !"));
-        assertEquals(c.eval("1"), c.eval("1 !"));
-        assertEquals(c.eval("2"), c.eval("2 !"));
-        assertEquals(c.eval("6"), c.eval("3 !"));
-        assertEquals(c.eval("24"), c.eval("4 !"));
-        assertEquals(c.eval("120"), c.eval("5 !"));
+        c.run("'(@0 0 <= '(1 ^1) '(@0 1 - fact *) if) 'fact define");
+        assertEquals(c.eval("1"), c.eval("0 fact"));
+        assertEquals(c.eval("1"), c.eval("1 fact"));
+        assertEquals(c.eval("2"), c.eval("2 fact"));
+        assertEquals(c.eval("6"), c.eval("3 fact"));
+        assertEquals(c.eval("24"), c.eval("4 fact"));
+        assertEquals(c.eval("120"), c.eval("5 fact"));
     }
 
     @Test
