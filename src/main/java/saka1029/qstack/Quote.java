@@ -1,6 +1,6 @@
 package saka1029.qstack;
 
-public class Quote implements Value {
+public class Quote implements Traceable {
     
     public final Element value;
     
