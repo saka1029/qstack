@@ -26,4 +26,16 @@ public class Bind {
         }
         return null;
     }
+    
+    public Element store(Symbol name) {
+        int nest = 0;
+        for (Bind b = this; b != null; b = b.prev, ++nest) {
+            int offset = b.names.indexOf(name);
+            if (offset >= 0) {
+                int n = nest;
+                return c -> c.store(n, -(offset + 1));
+            }
+        }
+        return null;
+    }
 }
