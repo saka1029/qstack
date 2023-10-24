@@ -24,7 +24,7 @@ public class Accessor implements Traceable {
     
     @Override
     public String toString() {
-        return "L" + offset + (nest == 0 ? "" : nest);
+        return (offset < 0 ? "A" + -offset : "L" + offset)  + (nest == 0 ? "" : nest);
     }
 
 }

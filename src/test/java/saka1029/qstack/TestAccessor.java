@@ -10,15 +10,15 @@ public class TestAccessor {
     public void testStore() {
         Context c = Context.of(10);
         c.add("set", k -> ((Accessor)k.globals.get((Symbol)k.pop())).store(k));
-        c.add("L-3", Accessor.of(0, -3));
-        c.add("L-2", Accessor.of(0, -2));
-        c.add("L-1", Accessor.of(0, -1));
+        c.add("A3", Accessor.of(0, -3));
+        c.add("A2", Accessor.of(0, -2));
+        c.add("A1", Accessor.of(0, -1));
         c.execute(Int.of(1));  // argument a
         c.execute(Int.of(2));  // argument b
         c.execute(Int.of(3));  // argument c
         c.execute(Int.of(c.fp)); // old fp
         c.fp = c.sp - 1;       // new fp
-        c.run("10 'L-3 set 20 'L-2 set 30 'L-1 set L-3");
+        c.run("10 'A3 set 20 'A2 set 30 'A1 set A3");
         assertEquals(Int.of(10), c.pop()); // argument a
         assertEquals(Int.of(0), c.pop()); // old fp
         assertEquals(Int.of(30), c.pop()); // argument c
