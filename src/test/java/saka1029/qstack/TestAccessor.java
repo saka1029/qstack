@@ -18,7 +18,7 @@ public class TestAccessor {
         c.execute(Int.of(3));  // argument c
         c.execute(Int.of(c.fp)); // old fp
         c.fp = c.sp - 1;       // new fp
-        c.run("10 'L-3 set 20 'L-2 set 30 'L-1 set L-3 stack");
+        c.run("10 'L-3 set 20 'L-2 set 30 'L-1 set L-3");
         assertEquals(Int.of(10), c.pop()); // argument a
         assertEquals(Int.of(0), c.pop()); // old fp
         assertEquals(Int.of(30), c.pop()); // argument c

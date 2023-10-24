@@ -243,6 +243,7 @@ public class Context {
             Element orElse = c.pop(), then = c.pop();
             execute(((Bool)c.pop()).value ? then : orElse);
         });
+        add("set", c -> ((Accessor)c.globals.get(c.pop())).store(c));
         add("define", c -> globals.put((Symbol)c.pop(), c.pop()));
         add("foreach", c -> {
             Element body = c.pop();
@@ -273,8 +274,8 @@ public class Context {
         
         add("array", c -> c.push(Array.of(((Int)c.pop()).value)));
         add("size", c -> c.push(Int.of(((Array)c.pop()).size())));
-        add("get", c -> { int i = ((Int)c.pop()).value; c.push(((Array)c.pop()).get(i)); });
-        add("set", c -> { Element e = c.pop(); int i = ((Int)c.pop()).value; ((Array)c.pop()).set(i, e); });
+        add("at", c -> { int i = ((Int)c.pop()).value; c.push(((Array)c.pop()).get(i)); });
+        add("put", c -> { Element e = c.pop(); int i = ((Int)c.pop()).value; ((Array)c.pop()).set(i, e); });
         add("L-A", c -> {
             List list = (List)c.pop();
             int length = list.length();
@@ -286,35 +287,36 @@ public class Context {
         });
         add("A-L", c -> c.push(List.of(((Array)c.pop()).array)));
         // Frameの引数アクセス
-        add("A1", c -> c.load(0, -1));
-        add("A2", c -> c.load(0, -2));
-        add("A3", c -> c.load(0, -3));
-        add("A4", c -> c.load(0, -4));
-        add("A5", c -> c.load(0, -5));
-        add("A6", c -> c.load(0, -6));
+        add("A1", Accessor.of(0, -1));
+        add("A2", Accessor.of(0, -2));
+        add("A3", Accessor.of(0, -3));
+        add("A4", Accessor.of(0, -4));
+        add("A5", Accessor.of(0, -5));
+        add("A6", Accessor.of(0, -6));
         // Frameのnest引数アクセス
-        add("A11", c -> c.load(1, -1));
-        add("A21", c -> c.load(1, -2));
-        add("A31", c -> c.load(1, -3));
-        add("A41", c -> c.load(1, -4));
-        add("A51", c -> c.load(1, -5));
-        add("A61", c -> c.load(1, -6));
+        add("A11", Accessor.of(1, -1));
+        add("A21", Accessor.of(1, -2));
+        add("A31", Accessor.of(1, -3));
+        add("A41", Accessor.of(1, -4));
+        add("A51", Accessor.of(1, -5));
+        add("A61", Accessor.of(1, -6));
         // Frameのローカル変数参照
-        add("L1", c -> c.load(0, 2));
-        add("L2", c -> c.load(0, 3));
-        add("L3", c -> c.load(0, 4));
-        // Frameのローカル変数更新
-        add("S1", c -> c.store(0, 2));
-        add("S2", c -> c.store(0, 3));
-        add("S3", c -> c.store(0, 4));
+        add("L1", Accessor.of(0, 2));
+        add("L2", Accessor.of(0, 3));
+        add("L3", Accessor.of(0, 4));
+//        // Frameのローカル変数更新 -> S1の代わりに'L1 setを使う。
+//        add("S1", c -> c.store(0, 2));
+//        add("S2", c -> c.store(0, 3));
+//        add("S3", c -> c.store(0, 4));
         // Frameのnest1ローカル変数参照
-        add("L11", c -> c.load(1, 2));
-        add("L21", c -> c.load(1, 3));
-        add("L31", c -> c.load(1, 4));
-        // Frameのnest1ローカル変数更新
-        add("S11", c -> c.store(1, 2));
-        add("S21", c -> c.store(1, 3));
-        add("S31", c -> c.store(1, 4));
+        add("L11", Accessor.of(1, 2));
+        add("L21", Accessor.of(1, 3));
+        add("L31", Accessor.of(1, 4));
+//        // Frameのnest1ローカル変数更新
+//        // Frameのローカル変数更新 -> S11の代わりに'L11 setを使う。
+//        add("S11", c -> c.store(1, 2));
+//        add("S21", c -> c.store(1, 3));
+//        add("S31", c -> c.store(1, 4));
         // Frameのローカル手続き実行
         // 'X1はローカル手続きをスタックにpushするが、
         // その手続きはfp相対で定義されたものであり、

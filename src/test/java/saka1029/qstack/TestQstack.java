@@ -343,7 +343,7 @@ public class TestQstack {
     @Test
     public void testFilterByForeachAndReverseFrameNest() {
         Context c = Context.of(40);
-        c.run("'(2 1 : '() A2 '(1 0 : A1 A11 execute '(A1 L11 cons S11) '() if) foreach reverse) 'filter define");
+        c.run("'(2 1 : '() A2 '(1 0 : A1 A11 execute '(A1 L11 cons 'L11 set) '() if) foreach reverse) 'filter define");
         assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
         assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
     }
@@ -502,8 +502,8 @@ public class TestQstack {
     @Test
     public void testSieveOfEratosthenes() {
         Context c = Context.of(6).output(logger::info);
-        c.run("'(@0 2 * @2 size rot '(@1 swap true set) for) 'sieve-of-eratosthenes define");
-        c.run("'('() 2 @2 size 1 '(@0 @3 swap get 'drop 'rcons if) for reverse ^1) 'array-to-list define");
+        c.run("'(@0 2 * @2 size rot '(@1 swap true put) for) 'sieve-of-eratosthenes define");
+        c.run("'('() 2 @2 size 1 '(@0 @3 swap at 'drop 'rcons if) for reverse ^1) 'array-to-list define");
         c.run("'(@0 array swap 2 swap 1 '(sieve-of-eratosthenes) for array-to-list) 'primes define");
         assertEquals(c.eval("'(2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97)"),
             c.eval("100 primes"));

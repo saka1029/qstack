@@ -36,10 +36,10 @@ public class TestBlock {
     public void testStore() {
         StringBuilder sb = new StringBuilder();
         Context c = Context.of(10).output(s -> sb.append(s).append(System.lineSeparator()));
-        assertEquals(Int.THREE, c.eval("2 (1 1 : 0 A1 1 + stack S1 stack L1)"));
+        assertEquals(Int.THREE, c.eval("2 (1 1 : 0 A1 1 + stack 'L1 set stack L1)"));
         assertEquals(// A1=2, old fp= 0 self=(1 1 : ...) L1=0
-            ("[2 0 (1 1 : 0 A1 1 + stack S1 stack L1) 0 3]%n"
-            + "[2 0 (1 1 : 0 A1 1 + stack S1 stack L1) 3]%n").formatted(), sb.toString());
+            ("[2 0 (1 1 : 0 A1 1 + stack 'L1 set stack L1) 0 3]%n"
+            + "[2 0 (1 1 : 0 A1 1 + stack 'L1 set stack L1) 3]%n").formatted(), sb.toString());
     }
 
     @Test
