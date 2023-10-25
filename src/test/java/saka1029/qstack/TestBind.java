@@ -1,83 +1,48 @@
 package saka1029.qstack;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+import java.util.Map;
 
 import org.junit.Test;
 
 public class TestBind {
 
     @Test
-    public void testLoad() {
-        Bind a = new Bind(null);
-        a.add(Symbol.of("a"));
-        a.add(Symbol.of("b"));
-        a.add(Symbol.of("c"));
-        Bind b = new Bind(a);
-        b.add(Symbol.of("x"));
-        b.add(Symbol.of("y"));
-        b.add(Symbol.of("z"));
-        Context c = Context.of(10);
-        c.execute(Int.of(0));
-        c.execute(Int.of(1));
-        c.execute(Int.of(2));
-        c.execute(Int.of(0));
-        c.execute(Int.of(3));
-        c.execute(Int.of(4));
-        c.execute(Int.of(5));
-        c.execute(Int.of(3));
-        c.fp = c.sp - 1;
-        c.execute(b.load(Symbol.of("x")));
-        assertEquals(Int.of(3), c.pop());
-        c.execute(b.load(Symbol.of("y")));
-        assertEquals(Int.of(4), c.pop());
-        c.execute(b.load(Symbol.of("z")));
-        assertEquals(Int.of(5), c.pop());
-        c.execute(b.load(Symbol.of("a")));
-        assertEquals(Int.of(0), c.pop());
-        c.execute(b.load(Symbol.of("b")));
-        assertEquals(Int.of(1), c.pop());
-        c.execute(b.load(Symbol.of("c")));
-        assertEquals(Int.of(2), c.pop());
+    public void testGet() {
+        Symbol x = Symbol.of("x");
+        Symbol y = Symbol.of("y");
+        Symbol z = Symbol.of("z");
+        Bind b = Bind.of(null, java.util.List.of(x, y, z));
+        Accessor az = b.get(z, 0);
+        assertEquals(-1, az.offset);
+        assertEquals(0, az.nest);
+        Accessor ax = b.get(x, 0);
+        assertEquals(-3, ax.offset);
+        assertEquals(0, ax.nest);
+        assertNull(b.get(Symbol.of("not"), 0));
     }
 
     @Test
-    public void testStore() {
-        Bind a = new Bind(null);
-        a.add(Symbol.of("a"));
-        a.add(Symbol.of("b"));
-        a.add(Symbol.of("c"));
-        Bind b = new Bind(a);
-        b.add(Symbol.of("x"));
-        b.add(Symbol.of("y"));
-        b.add(Symbol.of("z"));
-        Context c = Context.of(10);
-        c.execute(Int.of(0));
-        c.execute(Int.of(1));
-        c.execute(Int.of(2));
-        c.execute(Int.of(0));
-        c.execute(Int.of(3));
-        c.execute(Int.of(4));
-        c.execute(Int.of(5));
-        c.execute(Int.of(3));
-        c.fp = c.sp - 1;
-        c.execute(Int.of(30));
-        c.execute(b.store(Symbol.of("x")));
-        assertEquals(Int.of(30), c.stack[4]);
-        c.execute(Int.of(40));
-        c.execute(b.store(Symbol.of("y")));
-        assertEquals(Int.of(40), c.stack[5]);
-        c.execute(Int.of(50));
-        c.execute(b.store(Symbol.of("z")));
-        assertEquals(Int.of(50), c.stack[6]);
-        c.execute(Int.of(11));
-        c.execute(b.store(Symbol.of("a")));
-        assertEquals(Int.of(11), c.stack[0]);
-        c.execute(Int.of(10));
-        c.execute(b.store(Symbol.of("b")));
-        assertEquals(Int.of(10), c.stack[1]);
-        c.execute(Int.of(20));
-        c.execute(b.store(Symbol.of("c")));
-        assertEquals(Int.of(20), c.stack[2]);
+    public void testGetNest() {
+        Symbol p = Symbol.of("p");
+        Symbol q = Symbol.of("q");
+        Symbol r = Symbol.of("r");
+        Bind b1 = Bind.of(null, java.util.List.of(p, q));
+        Bind b = Bind.of(b1, java.util.List.of(q, r));
+        assertEquals(Map.of(q, -2, r, -1), b.bind);
+        assertEquals(Map.of(p, -2, q, -1), b.previous.bind);
+        assertNull(b.previous.previous);
+        Accessor ar = b.get(r, 0);
+        assertEquals(-1, ar.offset);
+        assertEquals(0, ar.nest);
+        Accessor aq = b.get(q, 0);
+        assertEquals(-2, aq.offset);
+        assertEquals(0, aq.nest);
+        Accessor ap = b.get(p, 0);
+        assertEquals(-2, ap.offset);
+        assertEquals(1, ap.nest);
     }
 
 }

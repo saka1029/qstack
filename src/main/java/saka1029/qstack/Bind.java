@@ -1,41 +1,37 @@
 package saka1029.qstack;
 
-import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Bind {
     
-    final LinkedList<Symbol> names = new LinkedList<>();
-    final Bind prev;
+    final Bind previous;
+    final Map<Symbol, Integer> bind = new HashMap<>();
     
-    Bind(Bind prev) {
-        this.prev = prev;
+    Bind(Bind previous, java.util.List<Symbol> names) {
+        this.previous = previous;
+        int offset = -names.size();
+        for (Symbol s : names)
+            bind.put(s, offset++);
     }
     
-    public void add(Symbol name) {
-        names.addFirst(name);
+    public static Bind of(Bind previous, java.util.List<Symbol> names) {
+        return new Bind(previous, names);
     }
     
-    public Element load(Symbol name) {
-        int nest = 0;
-        for (Bind b = this; b != null; b = b.prev, ++nest) {
-            int offset = b.names.indexOf(name);
-            if (offset >= 0) {
-                int n = nest;
-                return c -> c.load(n, -(offset + 1));
-            }
-        }
-        return null;
+    public Accessor get(Symbol name) {
+        return get(name);
+    }
+
+    public Accessor get(Symbol name, int nest) {
+        Integer offset = bind.get(name);
+        if (offset == null)
+            return previous == null ? null : previous.get(name, nest + 1);
+        return Accessor.of(nest, offset);
     }
     
-    public Element store(Symbol name) {
-        int nest = 0;
-        for (Bind b = this; b != null; b = b.prev, ++nest) {
-            int offset = b.names.indexOf(name);
-            if (offset >= 0) {
-                int n = nest;
-                return c -> c.store(n, -(offset + 1));
-            }
-        }
-        return null;
+    @Override
+    public String toString() {
+        return "%s -> %s".formatted(bind, previous);
     }
 }
