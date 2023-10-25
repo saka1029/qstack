@@ -80,3 +80,4 @@ a i e put
 ## モデル
 
 ![クラス図](qstack-クラス図.drawio.png)
+![クラス図](qstack-クラス図.drawio.svg)
