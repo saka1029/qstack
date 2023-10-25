@@ -1,6 +1,5 @@
 package saka1029.qstack;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -25,7 +24,7 @@ public interface List extends Traceable, Iterable<Element> {
      * elementsが[Int, Int, Symbol.of(":"), ...]の形式である場合は
      * 先頭要素をConsではなくBlockとします。 
      */
-    public static Element of(ArrayList<Element> elements, Element tail) {
+    public static Element of(java.util.List<Element> elements, Element tail) {
         int size = elements.size();
         if (size == 0)
             if (tail == NIL)
@@ -46,7 +45,7 @@ public interface List extends Traceable, Iterable<Element> {
         for (int i = size - 1; i > start; --i)
             result = Cons.of(elements.get(i), result);
         if (args >= 0)
-            result = Block.of(args, returns, first, result);
+            result = Block.of(first, result, args, returns);
         else
             result =  Cons.of(first, result);
         return result;

@@ -4,14 +4,20 @@ public class Block extends Cons {
     
     final int args, returns;
 
-    Block(int args, int returns, Element car, Element cdr) {
+    Block(Element car, Element cdr, int args, int returns) {
         super(car, cdr);
         this.args = args;
         this.returns = returns;
     }
     
-    public static Block of(int args, int returns, Element car, Element cdr) {
-        return new Block(args, returns, car, cdr);
+    public static Block of(Element car, Element cdr, int args, int returns) {
+        return new Block(car, cdr, args, returns);
+    }
+    
+    public static Block of(java.util.List<Element> elements, Element tail, int args, int returns) {
+        for (int i = elements.size() - 1; i > 0; --i)
+            tail = Cons.of(elements.get(i), tail);
+        return Block.of(elements.get(0), tail, args, returns);
     }
     
     /**
