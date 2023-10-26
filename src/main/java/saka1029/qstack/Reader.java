@@ -40,10 +40,22 @@ public class Reader {
             get();
     }
 
-    Element list(Bind bind) {
-        get(); // skip '('
+    Element namedFrame(Bind bind) {
         spaces();
+        if (ch == -1 || ch == ')' || ch == '.')
+            throw error("Int (number of returns) expected");
+        java.util.List<Symbol> args = new ArrayList<>();
+        Element e = read();
+        if (!(e instanceof Int i))
+            throw error("Int (number of returns) expected");
+        int returns = i.value;
+        for (e = read(); e != null && e instanceof Symbol s && !e.equals(Symbol.of(":")); e = read())
+            args.add(s);
+        if (e == null || !e.equals(Symbol.of(":")))
+            throw error("':' expected");
+        bind = Bind.of(bind, args);
         java.util.List<Element> list = new ArrayList<>();
+        spaces();
         while (ch != -1 && ch != ')' && ch != '.') {
             list.add(read(bind));
             spaces();
@@ -51,7 +63,7 @@ public class Reader {
         switch (ch) {
             case ')':
                 get(); // skip ')'
-                return List.of(list, List.NIL);
+                return Block.of(list, List.NIL, args.size(), returns);
             case '.':
                 get(); // skip '.'
                 Element tail = read(bind);
@@ -59,7 +71,50 @@ public class Reader {
                 if (ch != ')')
                     throw error("')' expected");
                 get(); // skip ')'
-                return List.of(list, tail);
+                return Block.of(list, tail, args.size(), returns);
+            default:
+                throw error("')' or '.' expected");
+        }
+    }
+    
+    Element frame(java.util.List<Element> elements, Element tail) {
+        int size = elements.size();
+        if (size >= 3
+            && elements.get(0) instanceof Int args
+            && elements.get(1) instanceof Int returns
+            && elements.get(2).equals(Symbol.of(":")))
+            return Block.of(elements.subList(3, size), tail, args.value, returns.value);
+        else
+            return List.of(elements, tail);
+    }
+
+    Element list(Bind bind) {
+        get(); // skip '('
+        spaces();
+        java.util.List<Element> list = new ArrayList<>();
+        if (ch != -1 && ch != ')' && ch != '.') {
+            Element first = read(bind);
+            if (first.equals(Symbol.of("F")))
+                return namedFrame(bind);
+            list.add(first);
+        }
+        spaces();
+        while (ch != -1 && ch != ')' && ch != '.') {
+            list.add(read(bind));
+            spaces();
+        }
+        switch (ch) {
+            case ')':
+                get(); // skip ')'
+                return frame(list, List.NIL);
+            case '.':
+                get(); // skip '.'
+                Element tail = read(bind);
+                spaces();
+                if (ch != ')')
+                    throw error("')' expected");
+                get(); // skip ')'
+                return frame(list, tail);
             default:
                 throw error("')' or '.' expected");
         }
@@ -79,7 +134,7 @@ public class Reader {
         };
     }
 
-    Element element(Bind bind) {
+    Element symbolOrInt(Bind bind) {
         StringBuilder sb = new StringBuilder();
         while (isWord(ch)) {
             sb.append((char) ch);
@@ -88,6 +143,8 @@ public class Reader {
         String word = sb.toString();
         if (INT_PAT.matcher(word).matches())
             return Int.of(Integer.parseInt(word));
+        else if (bind == null)
+            return Symbol.of(word);
         else
             return bind.get(Symbol.of(word), 0);
     }
@@ -130,7 +187,7 @@ public class Reader {
             case '"':
                 return str();
             default:
-                return element(bind);
+                return symbolOrInt(bind);
         }
     }
     
