@@ -142,13 +142,13 @@ public class Context {
     static final Pattern CLASS_CAST_EXCEPTION = Pattern.compile(
         "class \\S*\\.(\\S+) cannot be cast to class \\S*\\.(\\S+).*");
     
-    static RuntimeException error(ClassCastException e) {
-        Matcher m = CLASS_CAST_EXCEPTION.matcher(e.getMessage());
+    static RuntimeException error(ClassCastException ex, Element e) {
+        Matcher m = CLASS_CAST_EXCEPTION.matcher(ex.getMessage());
         if (m.find())
-            return new RuntimeException("Cast error "
-                + m.group(1) + " to " + m.group(2), e);
+            return new RuntimeException("Cast error %s to %s at %s"
+                .formatted(m.group(1), m.group(2), e), ex);
         else
-            return new RuntimeException(e);
+            return new RuntimeException(ex);
     }
 
     public void run(String source) {
@@ -158,7 +158,7 @@ public class Context {
             try {
                 execute(e);
             } catch (ClassCastException ex) {
-                throw error(ex);
+                throw error(ex, e);
             }
         trace("  ".repeat(nest) + this);
     }
