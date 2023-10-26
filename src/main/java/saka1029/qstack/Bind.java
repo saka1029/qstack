@@ -19,15 +19,11 @@ public class Bind {
         return new Bind(previous, names);
     }
     
-    public Accessor get(Symbol name) {
-        return get(name);
-    }
-
-    public Accessor get(Symbol name, int nest) {
-        Integer offset = bind.get(name);
+    public Symbol get(Symbol symbol, int nest) {
+        Integer offset = bind.get(symbol);
         if (offset == null)
-            return previous == null ? null : previous.get(name, nest + 1);
-        return Accessor.of(nest, offset);
+            return previous == null ? symbol : previous.get(symbol, nest + 1);
+        return Accessor.symbol(nest, offset);
     }
     
     @Override

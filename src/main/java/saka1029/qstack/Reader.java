@@ -40,12 +40,12 @@ public class Reader {
             get();
     }
 
-    Element list() {
+    Element list(Bind bind) {
         get(); // skip '('
         spaces();
-        ArrayList<Element> list = new ArrayList<>();
+        java.util.List<Element> list = new ArrayList<>();
         while (ch != -1 && ch != ')' && ch != '.') {
-            list.add(read());
+            list.add(read(bind));
             spaces();
         }
         switch (ch) {
@@ -54,7 +54,7 @@ public class Reader {
                 return List.of(list, List.NIL);
             case '.':
                 get(); // skip '.'
-                Element tail = read();
+                Element tail = read(bind);
                 spaces();
                 if (ch != ')')
                     throw error("')' expected");
@@ -65,9 +65,9 @@ public class Reader {
         }
     }
     
-    Quote quote() {
+    Quote quote(Bind bind) {
         get(); // skip '\''
-        return Quote.of(read());
+        return Quote.of(read(bind));
     }
 
     static final Pattern INT_PAT = Pattern.compile("[+-]?\\d+");
@@ -79,7 +79,7 @@ public class Reader {
         };
     }
 
-    Element element() {
+    Element element(Bind bind) {
         StringBuilder sb = new StringBuilder();
         while (isWord(ch)) {
             sb.append((char) ch);
@@ -89,7 +89,7 @@ public class Reader {
         if (INT_PAT.matcher(word).matches())
             return Int.of(Integer.parseInt(word));
         else
-            return Symbol.of(word);
+            return bind.get(Symbol.of(word), 0);
     }
 
     Str str() {
@@ -115,23 +115,26 @@ public class Reader {
         return Str.of(sb.toString());
     }
 
-    public Element read() {
+    public Element read(Bind bind) {
         spaces();
         switch (ch) {
             case -1:
                 return null;
             case '(':
-                return list();
+                return list(bind);
             case ')':
             case '.':
                 throw error("unexpected '%c'", (char)ch);
             case '\'':
-                return quote();
+                return quote(bind);
             case '"':
                 return str();
             default:
-                return element();
+                return element(bind);
         }
     }
-
+    
+    public Element read() {
+        return read(null);
+    }
 }

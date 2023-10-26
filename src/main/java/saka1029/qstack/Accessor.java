@@ -13,6 +13,13 @@ public class Accessor implements Traceable {
         return new Accessor(nest, offset);
     }
 
+    public static String name(int nest, int offset) {
+        return (offset < 0 ? "A" + -offset : "L" + offset)  + (nest == 0 ? "" : nest);
+    }
+    public static Symbol symbol(int nest, int offset) {
+        return Symbol.of(name(nest, offset));
+    }
+
     @Override
     public void execute(Context c) {
         c.load(nest, offset);
@@ -24,7 +31,6 @@ public class Accessor implements Traceable {
     
     @Override
     public String toString() {
-        return (offset < 0 ? "A" + -offset : "L" + offset)  + (nest == 0 ? "" : nest);
+        return name(nest, offset);
     }
-
 }
