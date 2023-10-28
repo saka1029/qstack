@@ -6,10 +6,28 @@ import org.junit.Test;
 
 public class TestNamedFrame {
 
+    /**
+     * f(n) {
+     *     return n + n
+     * }
+     */
     @Test
-    public void testRead() {
+    public void testNamedFrame() {
         Context c = Context.of(20);
         assertEquals(c.eval("'(1 1 : A1 A1 +)"), c.eval("'(F 1 n : n n +)"));
+    }
+    
+    /**
+     * f(a) {
+     *     L1(n) {
+     *         return a + n
+     *     }
+     *     return L1(4)
+     * }
+     */
+    @Test
+    public void testNestedFunction() {
+        Context c = Context.of(20);
         assertEquals(c.eval("'(1 1 : '(1 1 : A11 A1 +))"), c.eval("'(F 1 a : '(F 1 n : a n +))"));
         c.run("'(F 1 a : '(F 1 n : a n +) 4 L1 execute) 'nested-function define");
         assertEquals(Int.of(7), c.eval("3 nested-function"));
