@@ -8,9 +8,12 @@ public class TestNamedFrame {
 
     @Test
     public void testRead() {
-        Context c = Context.of(8);
+        Context c = Context.of(20);
         assertEquals(c.eval("'(1 1 : A1 A1 +)"), c.eval("'(F 1 n : n n +)"));
-        assertEquals(c.eval("'(1 1 : (1 1 : A11 A1 +))"), c.eval("'(F 1 a : (F 1 n : a n +))"));
+        assertEquals(c.eval("'(1 1 : '(1 1 : A11 A1 +))"), c.eval("'(F 1 a : '(F 1 n : a n +))"));
+        c.run("'(F 1 a : '(F 1 n : a n +) 4 L1 execute) 'nested-function define");
+        assertEquals(Int.of(7), c.eval("3 nested-function"));
+        assertEquals(Int.of(8), c.eval("4 nested-function"));
     }
     
     @Test
