@@ -49,6 +49,25 @@ A1のアドレスはstack[fp - 1]です。
 '(F 1 n : n 0 <= 1 '(n 1 - self n *) if)
 ```
 
+
+## 名前付きフレーム2
+
+書式:
+
+(frame r (A<sub>n</sub> ... A<sub>2</sub> A<sub>1</sub> [: L<sub>1</sub> L<sub>2</sub> ...]) W<sub>1</sub> W<sub>2</sub> ... )
+
+- F : 名前付きフレームマーカー
+- r : 戻り値の数
+- A<sub>n</sub> : 仮引数名
+- L<sub>n</sub> : ローカル変数名
+- W<sub>m</sub> : ワード
+
+階乗を計算する再帰的名前付きフレームは以下のようになる。
+
+```
+'(frame 1 (n) n 0 <= 1 '(n 1 - self n *) if)
+```
+
 ## 配列
 
 配列の作成
