@@ -40,6 +40,24 @@ public class Reader {
             get();
     }
 
+    Element elements(Bind bind, java.util.List<Element> list) {
+        spaces();
+        Element tail = List.NIL;
+        while (ch != -1 && ch != ')') {
+            Element e = readMaybeDot(bind);
+            if (e.equals(Symbol.of("."))) {
+                tail = read(bind);
+                break;
+            }
+            list.add(e);
+            spaces();
+        }
+        if (ch != ')')
+            error("')' expected");
+        get(); // skip ')'
+        return tail;
+    }
+
     Element namedFrame(Bind bind) {
         spaces();
         if (ch == -1 || ch == ')')
@@ -56,19 +74,7 @@ public class Reader {
         bind = Bind.of(bind, args);
         java.util.List<Element> list = new ArrayList<>();
         spaces();
-        Element tail = List.NIL;
-        while (ch != -1 && ch != ')') {
-            e = readMaybeDot(bind);
-            if (e.equals(Symbol.of("."))) {
-                tail = read(bind);
-                break;
-            }
-            list.add(e);
-            spaces();
-        }
-        if (ch != ')')
-            error("')' expected");
-        get(); // skip ')'
+        Element tail = elements(bind, list);
         return Block.of(list, tail, args.size(), returns);
     }
     
@@ -94,19 +100,7 @@ public class Reader {
             list.add(first);
             spaces();
         }
-        Element tail = List.NIL;
-        while (ch != -1 && ch != ')') {
-            Element e = readMaybeDot(bind);
-            if (e.equals(Symbol.of("."))) {
-                tail = read(bind);
-                break;
-            }
-            list.add(e);
-            spaces();
-        }
-        if (ch != ')')
-            error("')' expected");
-        get(); // skip ')'
+        Element tail = elements(bind, list);
         return frame(list, tail);
     }
     
