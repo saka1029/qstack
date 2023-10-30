@@ -176,7 +176,7 @@ public class Context {
     @Override
     public String toString() {
         return IntStream.range(0, sp)
-            .mapToObj(i -> stack[i].toString())
+            .mapToObj(i -> "" + stack[i])
             .collect(Collectors.joining(" ", "[", "]"));
     }
     
@@ -244,6 +244,7 @@ public class Context {
             execute(((Bool)c.pop()).value ? then : orElse);
         });
         add("set", c -> ((Accessor)c.globals.get(c.pop())).store(c));
+//        add("set", c -> ((Accessor)c.pop()).store(c));
         add("define", c -> globals.put((Symbol)c.pop(), c.pop()));
         add("foreach", c -> {
             Element body = c.pop();

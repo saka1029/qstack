@@ -127,10 +127,10 @@ public class Reader {
         String word = sb.toString();
         if (INT_PAT.matcher(word).matches())
             return Int.of(Integer.parseInt(word));
-        else if (bind == null)
-            return Symbol.of(word);
-        else
-            return bind.get(Symbol.of(word), 0);
+        else {
+            Symbol symbol = Symbol.of(word);
+            return bind == null ? symbol : bind.get(symbol, 0);
+        }
     }
 
     Str str() {

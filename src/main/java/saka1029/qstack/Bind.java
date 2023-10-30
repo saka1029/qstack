@@ -19,7 +19,7 @@ public class Bind {
         return new Bind(previous, names);
     }
     
-    public Symbol get(Symbol symbol, int nest) {
+    public Element get(Symbol symbol, int nest) {
         Integer offset = bind.get(symbol);
         if (offset == null)
             return previous == null ? symbol : previous.get(symbol, nest + 1);

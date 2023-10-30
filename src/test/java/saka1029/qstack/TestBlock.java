@@ -104,4 +104,26 @@ public class TestBlock {
         assertEquals(Int.of(7), c.eval("5 (1 1 : '(1 +) A1 L1 execute L1 execute)"));
     }
 
+    @Test
+    public void testNestedNamedFrameLocalFunction() {
+        Context c = Context.of(40);//.trace(logger::info);
+        assertEquals(Int.of(7), c.eval("5 (1 1 : '(1 1 : A1 A11 +) 2 L1 execute)"));
+        assertEquals(Int.of(7), c.eval("5 (F 1 n : '(F 1 i : i n +) 2 L1 execute)"));
+    }
+
+    @Test
+    public void testNamedFrame() {
+        Context c = Context.of(40);//.trace(logger::info);
+        c.run("'(F 1 n : n 0 <= 1 '(n 1 - self n *) if) 'fact define");
+        assertEquals(Int.of(24), c.eval("4 fact"));
+
+    }
+
+    @Test
+    public void testNamedFrameSet() {
+        Context c = Context.of(40);//.trace(logger::info);
+        c.run("'(F 1 n : 1 n 0 <= 1 '(n 1 - self n *) if 'L1 set L1) 'fact define");
+        assertEquals(Int.of(24), c.eval("4 fact"));
+
+    }
 }
