@@ -38,6 +38,15 @@ public class TestReader {
     }
     
     @Test
+    public void testReadSymbolWithDot() {
+        Reader reader = Reader.of("  a.b .bashrc end.");
+        assertEquals(Symbol.of("a.b"), reader.read());
+        assertEquals(Symbol.of(".bashrc"), reader.read());
+        assertEquals(Symbol.of("end."), reader.read());
+        assertNull(reader.read());
+    }
+    
+    @Test
     public void testReadQuoteList() {
         Reader reader = Reader.of("  ' (1 2  ) ");
         assertEquals(Quote.of(List.of(Int.ONE, Int.TWO)), reader.read());

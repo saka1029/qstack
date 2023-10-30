@@ -42,7 +42,7 @@ public class Reader {
 
     Element namedFrame(Bind bind) {
         spaces();
-        if (ch == -1 || ch == ')' || ch == '.')
+        if (ch == -1 || ch == ')')
             throw error("Int (number of returns) expected");
         java.util.List<Symbol> args = new ArrayList<>();
         Element e = read();
@@ -56,25 +56,20 @@ public class Reader {
         bind = Bind.of(bind, args);
         java.util.List<Element> list = new ArrayList<>();
         spaces();
-        while (ch != -1 && ch != ')' && ch != '.') {
-            list.add(read(bind));
+        Element tail = List.NIL;
+        while (ch != -1 && ch != ')') {
+            e = readMaybeDot(bind);
+            if (e.equals(Symbol.of("."))) {
+                tail = read(bind);
+                break;
+            }
+            list.add(e);
             spaces();
         }
-        switch (ch) {
-            case ')':
-                get(); // skip ')'
-                return Block.of(list, List.NIL, args.size(), returns);
-            case '.':
-                get(); // skip '.'
-                Element tail = read(bind);
-                spaces();
-                if (ch != ')')
-                    throw error("')' expected");
-                get(); // skip ')'
-                return Block.of(list, tail, args.size(), returns);
-            default:
-                throw error("')' or '.' expected");
-        }
+        if (ch != ')')
+            error("')' expected");
+        get(); // skip ')'
+        return Block.of(list, tail, args.size(), returns);
     }
     
     Element frame(java.util.List<Element> elements, Element tail) {
@@ -92,32 +87,27 @@ public class Reader {
         get(); // skip '('
         spaces();
         java.util.List<Element> list = new ArrayList<>();
-        if (ch != -1 && ch != ')' && ch != '.') {
+        if (ch != -1 && ch != ')') {
             Element first = read(bind);
             if (first.equals(Symbol.of("F")))
                 return namedFrame(bind);
             list.add(first);
-        }
-        spaces();
-        while (ch != -1 && ch != ')' && ch != '.') {
-            list.add(read(bind));
             spaces();
         }
-        switch (ch) {
-            case ')':
-                get(); // skip ')'
-                return frame(list, List.NIL);
-            case '.':
-                get(); // skip '.'
-                Element tail = read(bind);
-                spaces();
-                if (ch != ')')
-                    throw error("')' expected");
-                get(); // skip ')'
-                return frame(list, tail);
-            default:
-                throw error("')' or '.' expected");
+        Element tail = List.NIL;
+        while (ch != -1 && ch != ')') {
+            Element e = readMaybeDot(bind);
+            if (e.equals(Symbol.of("."))) {
+                tail = read(bind);
+                break;
+            }
+            list.add(e);
+            spaces();
         }
+        if (ch != ')')
+            error("')' expected");
+        get(); // skip ')'
+        return frame(list, tail);
     }
     
     Quote quote(Bind bind) {
@@ -129,7 +119,7 @@ public class Reader {
 
     static boolean isWord(int ch) {
         return switch (ch) {
-            case '(', ')', '.', '\'', '"', -1 -> false;
+            case '(', ')', '\'', '"', -1 -> false;
             default -> !Character.isWhitespace(ch);
         };
     }
@@ -172,7 +162,7 @@ public class Reader {
         return Str.of(sb.toString());
     }
 
-    public Element read(Bind bind) {
+    public Element readMaybeDot(Bind bind) {
         spaces();
         switch (ch) {
             case -1:
@@ -180,7 +170,6 @@ public class Reader {
             case '(':
                 return list(bind);
             case ')':
-            case '.':
                 throw error("unexpected '%c'", (char)ch);
             case '\'':
                 return quote(bind);
@@ -189,6 +178,13 @@ public class Reader {
             default:
                 return symbolOrInt(bind);
         }
+    }
+
+    public Element read(Bind bind) {
+        Element e = readMaybeDot(bind);
+        if (e != null && e.equals(Symbol.of(".")))
+            throw error("invalid symbol '.'");
+        return e;
     }
     
     public Element read() {
