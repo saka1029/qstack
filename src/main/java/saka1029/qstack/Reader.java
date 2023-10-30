@@ -183,7 +183,7 @@ public class Reader {
     public Element read(Bind bind) {
         Element e = readMaybeDot(bind);
         if (e != null && e.equals(Symbol.of(".")))
-            throw error("invalid symbol '.'");
+            throw error("invalid character '.'");
         return e;
     }
     

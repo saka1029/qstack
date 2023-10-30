@@ -2,6 +2,7 @@ package saka1029.qstack;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -35,6 +36,17 @@ public class TestReader {
         Reader reader = Reader.of("  '1 ");
         assertEquals(Quote.of(Int.ONE), reader.read());
         assertNull(reader.read());
+    }
+    
+    @Test
+    public void testReadSymbolDot() {
+        Reader reader = Reader.of("  .  ");
+        try {
+            assertEquals(Symbol.of("."), reader.read());
+            fail();
+        } catch (RuntimeException e) {
+            assertEquals("invalid character '.'", e.getMessage());
+        }
     }
     
     @Test
