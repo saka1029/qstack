@@ -54,7 +54,7 @@ A1のアドレスはstack[fp - 1]です。
 
 書式:
 
-(frame r (A<sub>n</sub> ... A<sub>2</sub> A<sub>1</sub> [: L<sub>1</sub> L<sub>2</sub> ...]) W<sub>1</sub> W<sub>2</sub> ... )
+(frame r (A<sub>n</sub> ... A<sub>2</sub> A<sub>1</sub> [: E<sub>1</sub> L<sub>1</sub> E<sub>2</sub> L<sub>2</sub> ...]) W<sub>1</sub> W<sub>2</sub> ... )
 
 - F : 名前付きフレームマーカー
 - r : 戻り値の数
@@ -67,6 +67,15 @@ A1のアドレスはstack[fp - 1]です。
 ```
 '(frame 1 (n) n 0 <= 1 '(n 1 - self n *) if)
 ```
+
+名前付きフレームは以下のように展開される。
+
+```
+(n r : E1 E2 ... W1 W2 ...)
+```
+
+`E1, E2`はローカル変数の値であり`L1, L2`でアクセスできる。
+
 
 ## 配列
 
