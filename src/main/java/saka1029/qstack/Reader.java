@@ -3,6 +3,7 @@ package saka1029.qstack;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.regex.Pattern;
 
 public class Reader {
@@ -60,19 +61,81 @@ public class Reader {
 
     Element namedFrame(Bind bind) {
         spaces();
-        if (ch == -1 || ch == ')')
-            throw error("Int (number of returns) expected");
+        Element er = read();
+        if (!(er instanceof Int nr))
+            throw error("int (number of returns) expected but %s", er);
+        int returns = nr.value;
+        spaces();
+        if (ch != '(')
+            throw error("'(' expected");
+        get(); // skip '('
         java.util.List<Symbol> args = new ArrayList<>();
-        Element e = read();
-        if (!(e instanceof Int i))
-            throw error("Int (number of returns) expected");
-        int returns = i.value;
-        for (e = read(); e != null && e instanceof Symbol s && !e.equals(Symbol.of(":")); e = read())
+        spaces();
+        while (ch != -1 && ch != ':' && ch != ')') {
+            Element e = read();
+            if (!(e instanceof Symbol s))
+                throw error("symbol expected but %s", e);
             args.add(s);
-        if (e == null || !e.equals(Symbol.of(":")))
-            throw error("':' expected");
-        bind = Bind.of(bind, args);
+            spaces();
+        }
+        Bind newBind = Bind.of(bind, args); // 引数をバインドする。
+        if (ch == -1)
+            throw error("':' or ')' expected but EOF found");
+        java.util.List<Element> values = new ArrayList<>();
+        java.util.List<Symbol> vars = new ArrayList<>();
+        if (ch == ':') {
+            get(); // skip ':'
+            spaces();
+            int offset = 2;
+            while (ch != -1 && ch != ')') {
+                Element value = read(newBind);
+                spaces();
+                if (ch == -1 || ch == ')')
+                    throw error("local variable (symbol) expected");
+                Element var = read(); // ローカル変数名はBindなしで読む。
+                if (!(var instanceof Symbol s))
+                    throw error("local variable (symbol) expected but %s", var);
+                values.add(value);
+                vars.add(s);
+                newBind.add(s, offset++);
+                spaces();
+            }
+        }
+        if (ch != ')')
+            throw error("')' expected");
+        get(); // skip ')'
+        Element eList = read(bind);
+        if (!(eList instanceof List parms))
+            throw error("argument list expected but %s", eList);
+        java.util.List<Symbol> args = new ArrayList<>();
+        java.util.List<Element> localValues = new ArrayList<>();
+        java.util.List<Symbol> localVariables = new ArrayList<>();
+        boolean colonFound = false;
+        for (Iterator<Element> it = parms.iterator(); it.hasNext();) {
+            Element e = it.next();
+            if (colonFound) {
+                if (e.equals(Symbol.of(":")))
+                    throw error("local value expected but %s", e);
+                if (!it.hasNext())
+                    throw error("local variable expected after %s", e);
+                Element f = it.next();
+                if (f instanceof Symbol localVariable && !localVariable.equals(Symbol.of(":"))) {
+                    localValues.add(e);
+                    localVariables.add(localVariable);
+                } else
+                    throw error("local variable expected but %s", f);
+            } else if (e instanceof Symbol s) {
+                if (s.equals(Symbol.of(":")))
+                    colonFound = true;
+                else
+                    args.add(s);
+            } else
+                throw error("unexpected element %s", e);
+        }
+        bind = Bind.of(bind, args, localVariables);
         java.util.List<Element> list = new ArrayList<>();
+        for (Element e : localValues)
+            list.add(e);
         spaces();
         Element tail = elements(bind, list);
         return Block.of(list, tail, args.size(), returns);
@@ -95,7 +158,7 @@ public class Reader {
         java.util.List<Element> list = new ArrayList<>();
         if (ch != -1 && ch != ')') {
             Element first = read(bind);
-            if (first.equals(Symbol.of("F")))
+            if (first.equals(Symbol.of("frame")))
                 return namedFrame(bind);
             list.add(first);
             spaces();

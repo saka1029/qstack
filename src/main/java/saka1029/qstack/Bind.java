@@ -8,15 +8,19 @@ public class Bind {
     final Bind previous;
     final Map<Symbol, Integer> bind = new HashMap<>();
     
-    Bind(Bind previous, java.util.List<Symbol> names) {
+    Bind(Bind previous, java.util.List<Symbol> args) {
         this.previous = previous;
-        int offset = -names.size();
-        for (Symbol s : names)
+        int offset = -args.size();
+        for (Symbol s : args)
             bind.put(s, offset++);
     }
     
-    public static Bind of(Bind previous, java.util.List<Symbol> names) {
-        return new Bind(previous, names);
+    public static Bind of(Bind previous, java.util.List<Symbol> args) {
+        return new Bind(previous, args);
+    }
+    
+    public void add(Symbol symbol, int offset) {
+        bind.put(symbol, offset);
     }
     
     public Element get(Symbol symbol, int nest) {
