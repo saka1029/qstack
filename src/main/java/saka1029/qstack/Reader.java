@@ -107,7 +107,7 @@ public class Reader {
         Element eList = read(bind);
         if (!(eList instanceof List parms))
             throw error("argument list expected but %s", eList);
-        java.util.List<Symbol> args = new ArrayList<>();
+//        java.util.List<Symbol> args = new ArrayList<>();
         java.util.List<Element> localValues = new ArrayList<>();
         java.util.List<Symbol> localVariables = new ArrayList<>();
         boolean colonFound = false;
@@ -132,7 +132,7 @@ public class Reader {
             } else
                 throw error("unexpected element %s", e);
         }
-        bind = Bind.of(bind, args, localVariables);
+//        bind = Bind.of(bind, args, localVariables);
         java.util.List<Element> list = new ArrayList<>();
         for (Element e : localValues)
             list.add(e);
