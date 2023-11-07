@@ -82,8 +82,12 @@ public class Parser {
         java.util.List<Element> list = new ArrayList<>();
         get(); // skip '('
         Element tail = List.NIL;
-        while (token != null && token != RP)
+        while (token != null && token != RP && token != DOT)
             list.add(read());
+        if (token == DOT) {
+            get(); // skip '.'
+            tail = read();
+        }
         if (token != RP)
             throw error("')' expected");
         get(); // skip ')'

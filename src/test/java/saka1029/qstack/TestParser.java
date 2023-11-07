@@ -35,6 +35,14 @@ public class TestParser {
     }
 
     @Test
+    public void testListDot() {
+        Parser p = Parser.of("  (a -3 . c) (2 .(a))");
+        assertEquals(List.of(java.util.List.of(Symbol.of("a"), Int.of(-3)), Symbol.of("c")), p.read());
+        assertEquals(List.of(Int.of(2), Symbol.of("a")), p.read());
+        assertNull(p.read());
+    }
+
+    @Test
     public void testQuote() {
         Parser p = Parser.of("  '(a -3 b) '() ");
         assertEquals(Quote.of(List.of(Symbol.of("a"), Int.of(-3), Symbol.of("b"))), p.read());
@@ -61,6 +69,17 @@ public class TestParser {
             fail();
         } catch (RuntimeException e) {
             assertEquals("unexpected '.'", e.getMessage());
+        }
+    }
+    
+    @Test
+    public void testListDotIllegal() {
+        Parser p = Parser.of(" (a . b c)  ");
+        try {
+            p.read();
+            fail();
+        } catch (RuntimeException e) {
+            assertEquals("')' expected", e.getMessage());
         }
     }
 
