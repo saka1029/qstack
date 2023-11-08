@@ -11,6 +11,7 @@ public class Parser {
     public static final Symbol RP = Symbol.of(")");
     public static final Symbol DOT = Symbol.of(".");
     public static final Symbol QUOTE = Symbol.of("'");
+    public static final Symbol COLON = Symbol.of(":");
 
     final java.io.Reader reader;
     int ch;
@@ -78,15 +79,54 @@ public class Parser {
         return new RuntimeException(format.formatted(args));
     }
 
-    Element list() {
+    Element frame(Bind bind) {
+        get(); // skip frame
+        if (!(token instanceof Int i))
+            throw error("int expected after frame");
+        int returns = i.value;
+        get(); // skip int
+        if (token != LP)
+            throw error("'(' expected");
+        get(); // skip '('
+        java.util.List<Symbol> args = new ArrayList<>();
+        while (token != null && token instanceof Symbol s && s != RP && s != COLON) {
+            args.add(s);
+            get(); // skip argument
+        }
+        Bind newBind = Bind.of(bind, args);
+        Element tail = List.NIL;
+        java.util.List<Element> elements = new ArrayList<>();
+        int offset = 2;
+        if (token == COLON) {
+            get(); // skip ':'
+            while (token != null && token != RP) {
+                elements.add(read(newBind));
+                if (token != null && token != RP && token instanceof Symbol s) {
+                    newBind.add(s, offset++);
+                    get(); // skip variable
+                } else
+                    throw error("local variable expected");
+            }
+        }
+        while (token != null && token != RP)
+            elements.add(read(newBind));
+        if (token != RP)
+            throw error("')' expected");
+        get(); // skip ')'
+        return Block.of(elements, tail, args.size(), returns);
+    }
+
+    Element list(Bind bind) {
         java.util.List<Element> list = new ArrayList<>();
         get(); // skip '('
+        if (token == Symbol.of("frame"))
+            return frame(bind);
         Element tail = List.NIL;
         while (token != null && token != RP && token != DOT)
-            list.add(read());
+            list.add(read(bind));
         if (token == DOT) {
             get(); // skip '.'
-            tail = read();
+            tail = read(bind);
         }
         if (token != RP)
             throw error("')' expected");
@@ -94,23 +134,24 @@ public class Parser {
         return List.of(list, tail);
     }
     
-    public Element read() {
+    public Element read(Bind bind) {
         if (token == null) {
             return null;
         } else if (token == LP) {
-            return list();
+            return list(bind);
         } else if (token == QUOTE) {
             get(); // sip '\''
-            return Quote.of(read());
+            return Quote.of(read(bind));
         } else if (token == RP || token == DOT) {
             throw error("unexpected '%s'", token);
-        } else if (token instanceof Int || token instanceof Symbol) {
-            Element e = token;
+        } else if (token instanceof Symbol s) {
             get();
-            return e;
+            return bind == null ? s : bind.get(s, 0);
+        } else if (token instanceof Int i) {
+            get();
+            return i;
         } else {
             throw error("unknown token '%s'", token);
         }
     }
-
 }
