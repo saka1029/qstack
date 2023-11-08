@@ -3,6 +3,16 @@ package saka1029.qstack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * A3 : Accessor.of(0, -3)
+ * A2 : Accessor.of(0, -2)
+ * A1 : Accessor.of(0, -1)
+ * A0 : Accessor.of(0, 0) --> 旧fp
+ * L0 : Accessor.of(0, 1) --> self
+ * L1 : Accessor.of(0, 2)
+ * L2 : Accessor.of(0, 3)
+ * L3 : Accessor.of(0, 4)
+ */
 public class Accessor implements Traceable {
     
     static final Pattern PAT = Pattern.compile("([AL])([1-9])([0-9])?");
