@@ -83,13 +83,15 @@ public class TestParser {
         }
     }
     
+    static Element read(String s) {
+        Parser p = Parser.of(s);
+        return p.read(null);
+    }
+
     @Test
-    public void testCast() {
-        Element e = Int.of(0);
-        if (e instanceof Int i) {
-            e = Int.of(2);
-            assertEquals(Int.of(0), i);
-        }
+    public void testFrame() {
+//        assertEquals("(1 1 : 3 A1 L1 +)", read("(frame 1 (n : 3 x) n x +)").toString());
+        assertEquals(read("(1 1 : 3 A1 L1 +)"), read("(frame 1 (n : 3 x) n x +)"));
     }
 
 }

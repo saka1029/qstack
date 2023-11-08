@@ -99,15 +99,18 @@ public class Parser {
         int offset = 2;
         if (token == COLON) {
             get(); // skip ':'
-            while (token != null && token != RP) {
+            while (token != null && token != RP&& token != DOT) {
                 elements.add(read(newBind));
-                if (token != null && token != RP && token instanceof Symbol s) {
+                if (token != null && token != RP && token != DOT && token instanceof Symbol s) {
                     newBind.add(s, offset++);
                     get(); // skip variable
                 } else
                     throw error("local variable expected");
             }
         }
+        if (token != RP)
+            throw error("')' expected");
+        get(); // skip ')'
         while (token != null && token != RP)
             elements.add(read(newBind));
         if (token != RP)
