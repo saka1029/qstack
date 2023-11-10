@@ -89,7 +89,7 @@ public class Parser {
             throw error("'(' expected");
         get(); // skip '('
         java.util.List<Symbol> args = new ArrayList<>();
-        while (token != null && token instanceof Symbol s && s != RP && s != COLON) {
+        while (token != null && token instanceof Symbol s && s != LP && s != RP && s != COLON && s != DOT) {
             args.add(s);
             get(); // skip argument
         }
@@ -99,9 +99,9 @@ public class Parser {
         int offset = 2;
         if (token == COLON) {
             get(); // skip ':'
-            while (token != null && token != RP&& token != DOT) {
+            while (token != null && token != RP && token != DOT) {
                 elements.add(read(newBind));
-                if (token != null && token != RP && token != DOT && token instanceof Symbol s) {
+                if (token != null && token instanceof Symbol s && s != LP && s != RP && s != COLON && s != DOT) {
                     newBind.add(s, offset++);
                     get(); // skip variable
                 } else
@@ -111,7 +111,7 @@ public class Parser {
         if (token != RP)
             throw error("')' expected");
         get(); // skip ')'
-        while (token != null && token != RP)
+        while (token != null && token != RP && token != DOT)
             elements.add(read(newBind));
         if (token != RP)
             throw error("')' expected");
