@@ -19,35 +19,10 @@ public interface List extends Traceable, Iterable<Element> {
         return result;
     }
 
-    /**
-     * elementsと最後の要素tailからListを作成します。
-     * elementsが[Int, Int, Symbol.of(":"), ...]の形式である場合は
-     * 先頭要素をConsではなくBlockとします。 
-     */
-    public static Element of(java.util.List<Element> elements, Element tail) {
-        int size = elements.size();
-        if (size == 0)
-            if (tail == NIL)
-                return NIL;
-            else
-                throw new IllegalArgumentException("Empty elements");
-        int start = 0, args = -1, returns = -1;
-        if  (size >= 3
-            && elements.get(0) instanceof Int a
-            && elements.get(1) instanceof Int r
-            && elements.get(2).equals(Symbol.of(":"))) {
-            start = 3;
-            args = a.value;
-            returns = r.value;
-        }
-        Element result = tail;
-        Element first = elements.get(start);
-        for (int i = size - 1; i > start; --i)
+    public static Element of(java.util.List<Element> elements) {
+        List result = NIL;
+        for (int i = elements.size() - 1; i >= 0; --i)
             result = Cons.of(elements.get(i), result);
-        if (args >= 0)
-            result = Block.of(first, result, args, returns);
-        else
-            result =  Cons.of(first, result);
         return result;
     }
     

@@ -4,14 +4,15 @@ import java.util.Objects;
 
 public class Cons implements List {
     
-    public final Element car, cdr;
+    public final Element car;
+    public final List cdr;
     
-    Cons(Element car, Element cdr) {
+    Cons(Element car, List cdr) {
         this.car = car;
         this.cdr = cdr;
     }
     
-    public static Cons of(Element car, Element cdr) {
+    public static Cons of(Element car, List cdr) {
         return new Cons(car, cdr);
     }
     
@@ -32,8 +33,6 @@ public class Cons implements List {
         Element e = cdr;
         for (; e instanceof Cons p; e = p.cdr)
             sb.append(" ").append(p.car);
-        if (e != NIL)
-            sb.append(" . ").append(e);
         return sb.append(")").toString();
     }
 }

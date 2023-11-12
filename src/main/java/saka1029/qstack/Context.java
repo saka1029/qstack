@@ -16,7 +16,7 @@ public class Context {
     static final Logger logger = Common.logger(Context.class);
 
     public final Element[] stack;
-    public int sp = 0, fp = 0, nest = 0;
+    public int sp = 0, nest = 0;
     public final Map<Symbol, Element> globals = new HashMap<>();
     public Consumer<String> output = System.out::println, trace = null;
 
@@ -124,21 +124,6 @@ public class Context {
         sp -= n;
     }
     
-    public int fp(int nest) {
-        int index = fp;
-        while (nest-- > 0)
-            index = ((Int)stack[index]).value;
-        return index;
-    }
-    
-    public void load(int nest, int offset) {
-        push(stack[fp(nest) + offset]);
-    }
-    
-    public void store(int nest, int offset) {
-        stack[fp(nest) + offset] = pop();
-    }
-
     static final Pattern CLASS_CAST_EXCEPTION = Pattern.compile(
         "class \\S*\\.(\\S+) cannot be cast to class \\S*\\.(\\S+).*");
     
@@ -187,7 +172,6 @@ public class Context {
     }
 
     void standard() {
-//        add("dup", c -> c.dup(0));
         add("@0", c -> c.dup(0));
         add("@1", c -> c.dup(1));
         add("@2", c -> c.dup(2));
@@ -223,8 +207,8 @@ public class Context {
         add("%", c -> { Int r = (Int)c.pop(); c.push(Int.of(((Int)c.pop()).value % r.value)); });
         add("car", c -> c.push(((Cons)c.pop()).car));
         add("cdr", c -> c.push(((Cons)c.pop()).cdr));
-        add("cons", c -> { Element r = c.pop(), l = c.pop(); c.push(Cons.of(l, r)); });
-        add("rcons", c -> { Element r = c.pop(), l = c.pop(); c.push(Cons.of(r, l)); });
+        add("cons", c -> { Element r = c.pop(), l = c.pop(); c.push(Cons.of(l, (List)r)); });
+        add("rcons", c -> { Element r = c.pop(), l = c.pop(); c.push(Cons.of(r, (List)l)); });
         add("uncons", c -> { Cons e = (Cons)c.pop(); c.push(e.car); c.push(e.cdr); });
 //        add("nil", c -> c.push(List.NIL));
         add("quote", c -> c.push(Quote.of(c.pop())));
@@ -234,7 +218,7 @@ public class Context {
         add("append", c -> { List right = (List)c.pop(); c.push(List.append(c.pop(), right)); });
         add("reverse", c -> {
             List list = (List)c.pop();
-            Element result = List.NIL;
+            List result = List.NIL;
             for (Element e : list)
                 result = Cons.of(e, result);
             c.push(result);
@@ -243,8 +227,6 @@ public class Context {
             Element orElse = c.pop(), then = c.pop();
             execute(((Bool)c.pop()).value ? then : orElse);
         });
-        add("set", c -> ((Accessor)c.globals.get(c.pop())).store(c));
-//        add("set", c -> ((Accessor)c.pop()).store(c));
         add("define", c -> globals.put((Symbol)c.pop(), c.pop()));
         add("foreach", c -> {
             Element body = c.pop();
@@ -287,47 +269,6 @@ public class Context {
             c.push(array);
         });
         add("A-L", c -> c.push(List.of(((Array)c.pop()).array)));
-        // Frameの引数アクセス
-        add("A1", Accessor.of(0, -1));
-        add("A2", Accessor.of(0, -2));
-        add("A3", Accessor.of(0, -3));
-        add("A4", Accessor.of(0, -4));
-        add("A5", Accessor.of(0, -5));
-        add("A6", Accessor.of(0, -6));
-        // Frameのnest引数アクセス
-        add("A11", Accessor.of(1, -1));
-        add("A21", Accessor.of(1, -2));
-        add("A31", Accessor.of(1, -3));
-        add("A41", Accessor.of(1, -4));
-        add("A51", Accessor.of(1, -5));
-        add("A61", Accessor.of(1, -6));
-        // Frameのローカル変数参照
-        add("L1", Accessor.of(0, 2));
-        add("L2", Accessor.of(0, 3));
-        add("L3", Accessor.of(0, 4));
-//        // Frameのローカル変数更新 -> S1の代わりに'L1 setを使う。
-//        add("S1", c -> c.store(0, 2));
-//        add("S2", c -> c.store(0, 3));
-//        add("S3", c -> c.store(0, 4));
-        // Frameのnest1ローカル変数参照
-        add("L11", Accessor.of(1, 2));
-        add("L21", Accessor.of(1, 3));
-        add("L31", Accessor.of(1, 4));
-//        // Frameのnest1ローカル変数更新
-//        // Frameのローカル変数更新 -> S11の代わりに'L11 setを使う。
-//        add("S11", c -> c.store(1, 2));
-//        add("S21", c -> c.store(1, 3));
-//        add("S31", c -> c.store(1, 4));
-        // Frameのローカル手続き実行
-        // 'X1はローカル手続きをスタックにpushするが、
-        // その手続きはfp相対で定義されたものであり、
-        // executeされる場所によっては正しく動作しない。
-        // ローカル手続きをスタックにpushするのであれば'X1ではなくL1を使用すべきである。
-        // 紛らわしいのでX1をやめてL1 executeを使用すべき。
-//        add("X1", c -> c.execute(stack[c.fp + 2]));
-//        add("X2", c -> c.execute(stack[c.fp + 3]));
-//        add("X3", c -> c.execute(stack[c.fp + 4]));
-        add("self", c -> c.execute(stack[c.fp + 1]));
     }
 
 }

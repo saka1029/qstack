@@ -25,30 +25,6 @@ public class TestQstack {
     }
 
     @Test
-    public void testFactFrame() {
-        Context c = Context.of(25);//.trace(logger::info);
-        c.run("'(1 1 : A1 0 <= 1 '(A1 1 - fact A1 *) if) 'fact define");
-        assertEquals(Int.of(1), c.eval("0 fact"));
-        assertEquals(Int.of(1), c.eval("1 fact"));
-        assertEquals(Int.of(2), c.eval("2 fact"));
-        assertEquals(Int.of(6), c.eval("3 fact"));
-        assertEquals(Int.of(24), c.eval("4 fact"));
-        assertEquals(Int.of(120), c.eval("5 fact"));
-    }
-
-    @Test
-    public void testFactFrameSelf() {
-        Context c = Context.of(25);//.trace(logger::info);
-        c.run("'(1 1 : A1 0 <= 1 '(A1 1 - self A1 *) if) 'fact define");
-        assertEquals(Int.of(1), c.eval("0 fact"));
-        assertEquals(Int.of(1), c.eval("1 fact"));
-        assertEquals(Int.of(2), c.eval("2 fact"));
-        assertEquals(Int.of(6), c.eval("3 fact"));
-        assertEquals(Int.of(24), c.eval("4 fact"));
-        assertEquals(Int.of(120), c.eval("5 fact"));
-    }
-
-    @Test
     public void testFactByFor() {
         Context c = Context.of(10);
         c.run("'(1 swap 1 swap 1 '* for) 'fact define");
@@ -60,18 +36,6 @@ public class TestQstack {
         assertEquals(c.eval("120"), c.eval("5 fact"));
     }
 
-    @Test
-    public void testFactFrameByFor() {
-        Context c = Context.of(10);//.trace(logger::info);
-        c.run("'(1 1 : 1 1 A1 1 '* for) 'fact define");
-        assertEquals(c.eval("1"), c.eval("0 fact"));
-        assertEquals(c.eval("1"), c.eval("1 fact"));
-        assertEquals(c.eval("2"), c.eval("2 fact"));
-        assertEquals(c.eval("6"), c.eval("3 fact"));
-        assertEquals(c.eval("24"), c.eval("4 fact"));
-        assertEquals(c.eval("120"), c.eval("5 fact"));
-    }
-    
     /**
      * '(1 2) '(3 4) append
      * (1 2) (3 4) : swap
@@ -92,39 +56,9 @@ public class TestQstack {
     }
     
     @Test
-    public void testAppendFrame() {
-        Context c = Context.of(25);
-        c.run("'(2 1 : A2 null? 'A1 '(A2 uncons A1 my-append cons) if) 'my-append define");
-        assertEquals(c.eval("'(1 2 3 4)"), c.eval("'() '(1 2 3 4) my-append"));
-        assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(1) '(2 3 4) my-append"));
-        assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(1 2) '(3 4) my-append"));
-        assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(1 2 3) '(4) my-append"));
-    }
-    
-    @Test
-    public void testAppendFrameSelf() {
-        Context c = Context.of(25);
-        c.run("'(2 1 : A2 null? 'A1 '(A2 uncons A1 self cons) if) 'my-append define");
-        assertEquals(c.eval("'(1 2 3 4)"), c.eval("'() '(1 2 3 4) my-append"));
-        assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(1) '(2 3 4) my-append"));
-        assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(1 2) '(3 4) my-append"));
-        assertEquals(c.eval("'(1 2 3 4)"), c.eval("'(1 2 3) '(4) my-append"));
-    }
-    
-    @Test
     public void testReverseByForeach() {
         Context c = Context.of(10);
         c.run("'('() swap 'rcons foreach) 'my-reverse define");
-        assertEquals(c.eval("'()"), c.eval("'() my-reverse"));
-        assertEquals(c.eval("'(1)"), c.eval("'(1) my-reverse"));
-        assertEquals(c.eval("'(2 1)"), c.eval("'(1 2) my-reverse"));
-        assertEquals(c.eval("'(4 3 2 1)"), c.eval("'(1 2 3 4) my-reverse"));
-    }
-    
-    @Test
-    public void testReverseFrameByForeach() {
-        Context c = Context.of(10);
-        c.run("'(1 1 : '() A1 'rcons foreach) 'my-reverse define");
         assertEquals(c.eval("'()"), c.eval("'() my-reverse"));
         assertEquals(c.eval("'(1)"), c.eval("'(1) my-reverse"));
         assertEquals(c.eval("'(2 1)"), c.eval("'(1 2) my-reverse"));
@@ -146,36 +80,6 @@ public class TestQstack {
         Context c = Context.of(10);
         c.run("'(@0 null? 'drop '(uncons rrot rcons swap my-reverse2) if)  'my-reverse2 define");
         c.run("'('() swap my-reverse2) 'my-reverse define");
-        assertEquals(c.eval("'()"), c.eval("'() my-reverse"));
-        assertEquals(c.eval("'(1)"), c.eval("'(1) my-reverse"));
-        assertEquals(c.eval("'(2 1)"), c.eval("'(1 2) my-reverse"));
-        assertEquals(c.eval("'(4 3 2 1)"), c.eval("'(1 2 3 4) my-reverse"));
-    }
-
-    /**
-     * unconsを使うよりcar, cdrを使う方がわかりやすいコードになる。
-     */
-    @Test
-    public void testReverseRecursiveFrame() {
-        Context c = Context.of(28);
-        // A2=(1 2 3) A1=()
-//      c.run("'(2 1 : A2 null? 'A1 '(A2 uncons swap A1 cons self) if) 'my-reverse2 define");
-        c.run("'(2 1 : A2 null? 'A1 '(A2 cdr A2 car A1 cons self) if) 'my-reverse2 define");
-        c.run("'('() my-reverse2) 'my-reverse define");
-        assertEquals(c.eval("'()"), c.eval("'() my-reverse"));
-        assertEquals(c.eval("'(1)"), c.eval("'(1) my-reverse"));
-        assertEquals(c.eval("'(2 1)"), c.eval("'(1 2) my-reverse"));
-        assertEquals(c.eval("'(4 3 2 1)"), c.eval("'(1 2 3 4) my-reverse"));
-    }
-
-    /**
-     * my-reverse2の定義本体を呼び出し箇所に埋め込むと関数定義が不要になる。
-     */
-    @Test
-    public void testReverseRecursiveFrame2() {
-        Context c = Context.of(28);
-        // A2=(1 2 3) A1=()
-        c.run("'('() (2 1 : A2 null? 'A1 '(A2 cdr A2 car A1 cons self) if)) 'my-reverse define");
         assertEquals(c.eval("'()"), c.eval("'() my-reverse"));
         assertEquals(c.eval("'(1)"), c.eval("'(1) my-reverse"));
         assertEquals(c.eval("'(2 1)"), c.eval("'(1 2) my-reverse"));
@@ -232,34 +136,12 @@ public class TestQstack {
     }
     
     /**
-     *  A2      A1
-     * (0 1 2) (1 +) map
-     */
-    @Test
-    public void testMapRecursiveFrame() {
-        Context c = Context.of(35);
-        c.run("'(2 1 : A2 null? ''() '(A2 car A1 execute A2 cdr A1 self cons) if) 'map define");
-        assertEquals(c.eval("'()"), c.eval("'() '(1 +) map"));
-        assertEquals(c.eval("'(1)"), c.eval("'(0) '(1 +) map"));
-        assertEquals(c.eval("'(1 2 3)"), c.eval("'(0 1 2) '(1 +) map"));
-        assertEquals(c.eval("'(1 2 3 4 5)"), c.eval("'(0 1 2 3 4) '(1 +) map"));
-    }
-    
-    /**
      * cdr部分の再起を先に実行する。リストの後ろからフィルターする。
      */
     @Test
     public void testFilterRecursiveFromLast() {
         Context c = Context.of(20);
         c.run("'(swap @0 null? '() '(uncons @2 filter swap @0 @3 execute 'rcons 'drop if) if ^1) 'filter define");
-        assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
-        assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
-    }
-    
-    @Test
-    public void testFilterRecursiveFromLastFrame() {
-        Context c = Context.of(30);
-        c.run("'(2 1 : A2 null? ''() '(A2 cdr A1 filter A2 car @0 A1 execute 'rcons 'drop if) if) 'filter define");
         assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
         assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
     }
@@ -291,18 +173,6 @@ public class TestQstack {
     }
     
     /**
-     * '()はexecuteするとNOPとなるが、''()はNILをpushする。
-     * 以下の場合は戻り値としてNILを返す必要があるので、'()ではなく''（）とする必要がある。
-     */
-    @Test
-    public void testFilterRecursiveFromFirstFrame() {
-        Context c = Context.of(35);
-        c.run("'(2 1 : A2 null? ''() '(A2 car @0 A1 execute A2 cdr A1 self swap 'cons '^1 if) if) 'filter define");
-        assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
-        assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
-    }
-    
-    /**
      * (0 1 2 3) (2 % 0 ==) filter
      * (0 1 2 3) (2 % 0 ==) : swap
      * (2 % 0 ==) (0 1 2 3) : '()
@@ -317,37 +187,10 @@ public class TestQstack {
         assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
     }
 
-    @Test
-    public void testFilterByForeachAndReverseFrame() {
-        Context c = Context.of(40);
-        c.run("'(2 1 : '() A2 '(@0 A1 execute 'rcons 'drop if) foreach reverse) 'filter define");
-        assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
-        assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
-    }
-    
     static int i(Element e) {
         return ((Int)e).value;
     }
 
-    /**
-     * <pre>
-     * filter(A2, A1) {
-     *     L1 = '()
-     *     foreach (e : A2)
-     *         if (A1(e))
-     *             L1 = cons(e, L1)
-     *     return reverse(L1)
-     * }
-     * </pre>
-     */
-    @Test
-    public void testFilterByForeachAndReverseFrameNest() {
-        Context c = Context.of(40);
-        c.run("'(2 1 : '() A2 '(1 0 : A1 A11 execute '(A1 L11 cons 'L11 set) '() if) foreach reverse) 'filter define");
-        assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
-        assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
-    }
-    
     /**
      * filter-predicateは述語(E->B)をフィルター用の述語に変換する高階関数。
      * pred filter-predicate -> (@0 pred execute 'rcons 'drop if)

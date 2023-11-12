@@ -3,28 +3,30 @@ package saka1029.qstack;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.regex.Pattern;
 
 public class Reader {
+    
+    public static final Symbol LP = Symbol.of("(");
+    public static final Symbol RP = Symbol.of(")");
+    public static final Symbol QUOTE = Symbol.of("'");
+    public static final Symbol COLON = Symbol.of(":");
 
     final java.io.Reader reader;
     int ch;
-
+    Element token;
+    
     Reader(java.io.Reader reader) {
         this.reader = reader;
+        getCh();
         get();
     }
-
-    public static Reader of(java.io.Reader reader) {
-        return new Reader(reader);
+    
+    public static Reader of(String s) {
+        return new Reader(new StringReader(s));
     }
-
-    public static Reader of(String source) {
-        return new Reader(new StringReader(source));
-    }
-
-    int get() {
+    
+    int getCh() {
         try {
             return ch = reader.read();
         } catch (IOException e) {
@@ -32,176 +34,41 @@ public class Reader {
         }
     }
     
-    RuntimeException error(String format, Object... args) {
-        return new RuntimeException(format.formatted(args));
-    }
-
     void spaces() {
         while (Character.isWhitespace(ch))
-            get();
-    }
-
-    Element elements(Bind bind, java.util.List<Element> list) {
-        spaces();
-        Element tail = List.NIL;
-        while (ch != -1 && ch != ')') {
-            Element e = readMaybeDot(bind);
-            if (e.equals(Symbol.of("."))) {
-                tail = read(bind);
-                break;
-            }
-            list.add(e);
-            spaces();
-        }
-        if (ch != ')')
-            error("')' expected");
-        get(); // skip ')'
-        return tail;
-    }
-
-    Element namedFrame(Bind bind) {
-        spaces();
-        Element er = read();
-        if (!(er instanceof Int nr))
-            throw error("int (number of returns) expected but %s", er);
-        int returns = nr.value;
-        spaces();
-        if (ch != '(')
-            throw error("'(' expected");
-        get(); // skip '('
-        java.util.List<Symbol> args = new ArrayList<>();
-        spaces();
-        while (ch != -1 && ch != ':' && ch != ')') {
-            Element e = read();
-            if (!(e instanceof Symbol s))
-                throw error("symbol expected but %s", e);
-            args.add(s);
-            spaces();
-        }
-        Bind newBind = Bind.of(bind, args); // 引数をバインドする。
-        if (ch == -1)
-            throw error("':' or ')' expected but EOF found");
-        java.util.List<Element> values = new ArrayList<>();
-        java.util.List<Symbol> vars = new ArrayList<>();
-        if (ch == ':') {
-            get(); // skip ':'
-            spaces();
-            int offset = 2;
-            while (ch != -1 && ch != ')') {
-                Element value = read(newBind);
-                spaces();
-                if (ch == -1 || ch == ')')
-                    throw error("local variable (symbol) expected");
-                Element var = read(); // ローカル変数名はBindなしで読む。
-                if (!(var instanceof Symbol s))
-                    throw error("local variable (symbol) expected but %s", var);
-                values.add(value);
-                vars.add(s);
-                newBind.add(s, offset++);
-                spaces();
-            }
-        }
-        if (ch != ')')
-            throw error("')' expected");
-        get(); // skip ')'
-        Element eList = read(bind);
-        if (!(eList instanceof List parms))
-            throw error("argument list expected but %s", eList);
-//        java.util.List<Symbol> args = new ArrayList<>();
-        java.util.List<Element> localValues = new ArrayList<>();
-        java.util.List<Symbol> localVariables = new ArrayList<>();
-        boolean colonFound = false;
-        for (Iterator<Element> it = parms.iterator(); it.hasNext();) {
-            Element e = it.next();
-            if (colonFound) {
-                if (e.equals(Symbol.of(":")))
-                    throw error("local value expected but %s", e);
-                if (!it.hasNext())
-                    throw error("local variable expected after %s", e);
-                Element f = it.next();
-                if (f instanceof Symbol localVariable && !localVariable.equals(Symbol.of(":"))) {
-                    localValues.add(e);
-                    localVariables.add(localVariable);
-                } else
-                    throw error("local variable expected but %s", f);
-            } else if (e instanceof Symbol s) {
-                if (s.equals(Symbol.of(":")))
-                    colonFound = true;
-                else
-                    args.add(s);
-            } else
-                throw error("unexpected element %s", e);
-        }
-//        bind = Bind.of(bind, args, localVariables);
-        java.util.List<Element> list = new ArrayList<>();
-        for (Element e : localValues)
-            list.add(e);
-        spaces();
-        Element tail = elements(bind, list);
-        return Block.of(list, tail, args.size(), returns);
+            getCh();
     }
     
-    Element frame(java.util.List<Element> elements, Element tail) {
-        int size = elements.size();
-        if (size >= 3
-            && elements.get(0) instanceof Int args
-            && elements.get(1) instanceof Int returns
-            && elements.get(2).equals(Symbol.of(":")))
-            return Block.of(elements.subList(3, size), tail, args.value, returns.value);
-        else
-            return List.of(elements, tail);
-    }
-
-    Element list(Bind bind) {
-        get(); // skip '('
-        spaces();
-        java.util.List<Element> list = new ArrayList<>();
-        if (ch != -1 && ch != ')') {
-            Element first = read(bind);
-            if (first.equals(Symbol.of("frame")))
-                return namedFrame(bind);
-            list.add(first);
-            spaces();
-        }
-        Element tail = elements(bind, list);
-        return frame(list, tail);
-    }
-    
-    Quote quote(Bind bind) {
-        get(); // skip '\''
-        return Quote.of(read(bind));
-    }
-
     static final Pattern INT_PAT = Pattern.compile("[+-]?\\d+");
 
     static boolean isWord(int ch) {
         return switch (ch) {
-            case '(', ')', '\'', '"', -1 -> false;
+            case '(', ')', '\'', -1 -> false;
             default -> !Character.isWhitespace(ch);
         };
     }
 
-    Element symbolOrInt(Bind bind) {
+    Element symbolOrInt() {
         StringBuilder sb = new StringBuilder();
-        while (isWord(ch)) {
-            sb.append((char) ch);
-            get();
-        }
-        String word = sb.toString();
-        if (INT_PAT.matcher(word).matches())
-            return Int.of(Integer.parseInt(word));
-        else {
-            Symbol symbol = Symbol.of(word);
-            return bind == null ? symbol : bind.get(symbol, 0);
-        }
+        do {
+            sb.append((char)ch);
+            getCh();
+        } while (isWord(ch));
+        String s = sb.toString();
+        return INT_PAT.matcher(s).matches() ? Int.of(Integer.parseInt(s)) : Symbol.of(s);
     }
-
+    
+    Element get(Element e) {
+        getCh();
+        return e;
+    }
+    
     Str str() {
-        get(); // skip '"'
+        getCh(); // skip '\'"
         StringBuilder sb = new StringBuilder();
-        while (ch != -1 && ch != '"') {
+        while (ch != -1 && ch != '\"') {
             if (ch == '\\') {
-                get(); // skip '\\'
+                getCh(); // skip '\\'
                 switch (ch) {
                     case 'r': sb.append('\r'); break;
                     case 'n': sb.append('\n'); break;
@@ -211,40 +78,57 @@ public class Reader {
                 }
             } else
                 sb.append((char)ch);
-            get();
+            getCh();
         }
-        if (ch != '"')
+        if (ch != '\"')
             throw error("'\"' expected");
-        get(); // skip '"'
+        getCh(); // skip '\"'
         return Str.of(sb.toString());
     }
 
-    public Element readMaybeDot(Bind bind) {
+    Element get() {
         spaces();
-        switch (ch) {
-            case -1:
-                return null;
-            case '(':
-                return list(bind);
-            case ')':
-                throw error("unexpected '%c'", (char)ch);
-            case '\'':
-                return quote(bind);
-            case '"':
-                return str();
-            default:
-                return symbolOrInt(bind);
-        }
+        return token = switch (ch) {
+            case -1 -> null;
+            case '(' -> get(LP);
+            case ')' -> get(RP);
+            case '\'' -> get(QUOTE);
+            case '\"' -> str();
+            default -> symbolOrInt();
+        };
+    }
+    
+    RuntimeException error(String format, Object... args) {
+        return new RuntimeException(format.formatted(args));
     }
 
-    public Element read(Bind bind) {
-        Element e = readMaybeDot(bind);
-        if (e != null && e.equals(Symbol.of(".")))
-            throw error("invalid character '.'");
-        return e;
+    Element list() {
+        java.util.List<Element> list = new ArrayList<>();
+        get(); // skip '('
+        while (token != null && token != RP)
+            list.add(read());
+        if (token != RP)
+            throw error("')' expected");
+        get(); // skip ')'
+        return List.of(list);
     }
     
     public Element read() {
-        return read(null);
+        if (token == null) {
+            return null;
+        } else if (token == LP) {
+            return list();
+        } else if (token == QUOTE) {
+            get(); // sip '\''
+            return Quote.of(read());
+        } else if (token == RP) {
+            throw error("unexpected '%s'", token);
+        } else if (token instanceof Symbol || token instanceof Int || token instanceof Str) {
+            Element r = token;
+            get();
+            return r;
+        } else {
+            throw error("unknown token '%s'", token);
+        }
     }
 }
