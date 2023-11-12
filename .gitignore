@@ -8,3 +8,4 @@
 .~lock*
 /bin/
 *.bkp
+.$*.bkp
