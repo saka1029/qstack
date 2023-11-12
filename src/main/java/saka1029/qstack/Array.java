@@ -22,8 +22,8 @@ public class Array implements Value, Collection {
     }
     
     @Override
-    public void put(int index, Element element) {
-        array[index - 1] = element;
+    public void put(Element index, Element element) {
+        array[((Int)index).value - 1] = element;
     }
     
     @Override

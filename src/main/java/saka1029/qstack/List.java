@@ -45,7 +45,7 @@ public interface List extends Traceable, Collection {
     }
     
     @Override
-    default void put(int index, Element e) {
+    default void put(Element index, Element e) {
         throw new UnsupportedOperationException();
     }
     

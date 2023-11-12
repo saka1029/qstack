@@ -256,7 +256,7 @@ public class Context {
         
         add("array", c -> c.push(Array.of(((Int)c.pop()).value)));
         add("at", c -> { Collection x = (Collection)c.pop(); int i = ((Int)c.pop()).value; c.push(x.at(i)); });
-        add("put", c -> { Collection x = (Collection)c.pop(); Element e = c.pop(); int i = ((Int)c.pop()).value; x.put(i, e); });
+        add("put", c -> { Collection x = (Collection)c.pop(); Element e = c.pop(), i = c.pop(); x.put(i, e); });
         add("size", c -> { Collection x = (Collection)c.pop(); c.push(Int.of(x.size())); });
         add("L-A", c -> {
             List list = (List)c.pop();
@@ -264,7 +264,7 @@ public class Context {
             Array array = Array.of(length);
             int i = 1;
             for (Element e : list)
-                array.put(i++, e);
+                array.put(Int.of(i++), e);
             c.push(array);
         });
         add("A-L", c -> c.push(List.of(((Array)c.pop()).array)));
