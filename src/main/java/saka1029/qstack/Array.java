@@ -1,8 +1,9 @@
 package saka1029.qstack;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
-public class Array implements Value {
+public class Array implements Value, Collection {
 
     public final Element[] array;
     
@@ -15,18 +16,39 @@ public class Array implements Value {
         return new Array(size);
     }
     
+    @Override
+    public Element at(int index) {
+        return array[index - 1];
+    }
+    
+    @Override
+    public void put(int index, Element element) {
+        array[index - 1] = element;
+    }
+    
+    @Override
     public int size() {
         return array.length;
     }
     
-    public Element get(int index) {
-        return array[index - 1];
+    @Override
+    public Iterator<Element> iterator() {
+        return new Iterator<>() {
+            
+            int index = 0, size = size();
+
+            @Override
+            public boolean hasNext() {
+                return index < size;
+            }
+
+            @Override
+            public Element next() {
+                return array[index++];
+            }
+        };
     }
-    
-    public void set(int index, Element element) {
-        array[index - 1] = element;
-    }
-    
+
     @Override
     public int hashCode() {
         return Arrays.hashCode(array);

@@ -195,32 +195,32 @@ public class TestContext {
     }
     
     @Test
-    public void testLength() {
+    public void testSize() {
         Context c = Context.of(5);
-        assertEquals(c.eval("5"), c.eval("'(0 1 2 3 4) length"));
+        assertEquals(c.eval("5"), c.eval("'(0 1 2 3 4) size"));
     }
     
     @Test
     public void testToList() {
         Context c = Context.of(5).output(logger::info);
-        assertEquals(c.eval("'(1 2 3)"), c.eval("3 array @0 1 1 put @0 2 2 put @0 3 3 put A-L"));
+        assertEquals(c.eval("'(1 2 3)"), c.eval("3 array 1 1 @2 put 2 2 @2 put 3 3 @2 put A-L"));
     }
     
     @Test
     public void testToArray() {
         Context c = Context.of(5);//.trace(logger::info);
-        assertEquals(c.eval("3 array @0 1 1 put @0 2 2 put @0 3 3 put"), c.eval("'(1 2 3) L-A"));
+        assertEquals(c.eval("3 array 1 1 @2 put 2 2 @2 put 3 3 @2 put"), c.eval("'(1 2 3) L-A"));
     }
 
     @Test
     public void testArray() {
         Context c = Context.of(5).output(logger::info);
-        c.run("5 array 1 5 1 '(@1 swap @0 put) for");
+        c.run("5 array 1 5 1 '(@0 @2 put) for");
         assertEquals(c.eval("5"), c.eval("@0 size"));
-        assertEquals(c.eval("1"), c.eval("@0 1 at"));
-        assertEquals(c.eval("2"), c.eval("@0 2 at"));
-        assertEquals(c.eval("3"), c.eval("@0 3 at"));
-        assertEquals(c.eval("4"), c.eval("@0 4 at"));
-        assertEquals(c.eval("5"), c.eval("@0 5 at"));
+        assertEquals(c.eval("1"), c.eval("1 @1 at"));
+        assertEquals(c.eval("2"), c.eval("2 @1 at"));
+        assertEquals(c.eval("3"), c.eval("3 @1 at"));
+        assertEquals(c.eval("4"), c.eval("4 @1 at"));
+        assertEquals(c.eval("5"), c.eval("5 @1 at"));
     }
 }

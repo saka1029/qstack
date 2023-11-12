@@ -214,7 +214,6 @@ public class Context {
         add("quote", c -> c.push(Quote.of(c.pop())));
         add("null?", c -> c.push(Bool.of(c.pop().equals(List.NIL))));
         add("list?", c -> c.push(Bool.of(c.pop() instanceof List)));
-        add("length", c -> c.push(Int.of(((List)c.pop()).length())));
         add("append", c -> { List right = (List)c.pop(); c.push(List.append(c.pop(), right)); });
         add("reverse", c -> {
             List list = (List)c.pop();
@@ -230,7 +229,7 @@ public class Context {
         add("define", c -> globals.put((Symbol)c.pop(), c.pop()));
         add("foreach", c -> {
             Element body = c.pop();
-            for (Element e : (List)c.pop()) {
+            for (Element e : (Collection)c.pop()) {
                 c.push(e);
                 c.execute(body);
             }
@@ -256,16 +255,16 @@ public class Context {
         add("println", c -> output(c.pop() + System.lineSeparator()));
         
         add("array", c -> c.push(Array.of(((Int)c.pop()).value)));
-        add("size", c -> c.push(Int.of(((Array)c.pop()).size())));
-        add("at", c -> { int i = ((Int)c.pop()).value; c.push(((Array)c.pop()).get(i)); });
-        add("put", c -> { Element e = c.pop(); int i = ((Int)c.pop()).value; ((Array)c.pop()).set(i, e); });
+        add("at", c -> { Collection x = (Collection)c.pop(); int i = ((Int)c.pop()).value; c.push(x.at(i)); });
+        add("put", c -> { Collection x = (Collection)c.pop(); Element e = c.pop(); int i = ((Int)c.pop()).value; x.put(i, e); });
+        add("size", c -> { Collection x = (Collection)c.pop(); c.push(Int.of(x.size())); });
         add("L-A", c -> {
             List list = (List)c.pop();
-            int length = list.length();
+            int length = list.size();
             Array array = Array.of(length);
             int i = 1;
             for (Element e : list)
-                array.set(i++, e);
+                array.put(i++, e);
             c.push(array);
         });
         add("A-L", c -> c.push(List.of(((Array)c.pop()).array)));
