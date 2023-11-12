@@ -61,7 +61,7 @@ public interface List extends Traceable, Collection {
     default Iterator<Element> iterator() {
         return new Iterator<>() {
             
-            Element next = List.this;
+            List next = List.this;
 
             @Override
             public boolean hasNext() {
