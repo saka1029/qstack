@@ -38,8 +38,10 @@ public interface List extends Traceable, Collection {
     
     @Override
     default Element at(int index) {
+        if (index <= 0)
+            throw new IndexOutOfBoundsException("index");
         for (Element e : this)
-            if (index-- == 0)
+            if (index-- == 1)
                 return e;
         throw new RuntimeException("index (" + index + ") >= " + size());
     }
