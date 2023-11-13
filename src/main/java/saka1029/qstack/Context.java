@@ -171,6 +171,26 @@ public class Context {
         return key;
     }
 
+    static int i(Element e) {
+        return ((Int)e).value;
+    }
+    
+    static Int i(int i) {
+        return Int.of(i);
+    }
+    
+    static boolean b(Element e) {
+        return ((Bool)e).value;
+    }
+    
+    static Bool b(boolean b) {
+        return Bool.of(b);
+    }
+    
+    static Ordered o(Element e) {
+        return (Ordered)e;
+    }
+
     void standard() {
         add("@0", c -> c.dup(0));
         add("@1", c -> c.dup(1));
@@ -190,21 +210,21 @@ public class Context {
         add("execute", c -> c.execute(c.pop()));
         add("true", Bool.TRUE);
         add("false", Bool.FALSE);
-        add("and", c -> c.push(Bool.of(((Bool)c.pop()).value & ((Bool)c.pop()).value)));
-        add("or", c -> c.push(Bool.of(((Bool)c.pop()).value | ((Bool)c.pop()).value)));
-        add("xor", c -> c.push(Bool.of(((Bool)c.pop()).value ^ ((Bool)c.pop()).value)));
-        add("not", c -> c.push(Bool.of(!((Bool)c.pop()).value)));
-        add("==", c -> c.push(Bool.of(c.pop().equals(c.pop()))));
-        add("!=", c -> c.push(Bool.of(!c.pop().equals(c.pop()))));
-        add("<", c -> c.push(Bool.of(((Ordered)c.pop()).compareTo((Ordered)c.pop()) > 0)));
-        add("<=", c -> c.push(Bool.of(((Ordered)c.pop()).compareTo((Ordered)c.pop()) >= 0)));
-        add(">", c -> c.push(Bool.of(((Ordered)c.pop()).compareTo((Ordered)c.pop()) < 0)));
-        add(">=", c -> c.push(Bool.of(((Ordered)c.pop()).compareTo((Ordered)c.pop()) <= 0)));
-        add("+", c -> c.push(Int.of(((Int)c.pop()).value + ((Int)c.pop()).value)));
-        add("-", c -> c.push(Int.of(-((Int)c.pop()).value + ((Int)c.pop()).value)));
-        add("*", c -> c.push(Int.of(((Int)c.pop()).value * ((Int)c.pop()).value)));
-        add("/", c -> { Int r = (Int)c.pop(); c.push(Int.of(((Int)c.pop()).value / r.value)); });
-        add("%", c -> { Int r = (Int)c.pop(); c.push(Int.of(((Int)c.pop()).value % r.value)); });
+        add("and", c -> c.push(b(b(c.pop()) & b(c.pop()))));
+        add("or", c -> c.push(b(b(c.pop()) | b(c.pop()))));
+        add("xor", c -> c.push(b(b(c.pop()) ^ b(c.pop()))));
+        add("not", c -> c.push(b(!b(c.pop()))));
+        add("==", c -> c.push(b(c.pop().equals(c.pop()))));
+        add("!=", c -> c.push(b(!c.pop().equals(c.pop()))));
+        add("<", c -> c.push(b(o(c.pop()).compareTo(o(c.pop())) > 0)));
+        add("<=", c -> c.push(b(o(c.pop()).compareTo(o(c.pop())) >= 0)));
+        add(">", c -> c.push(b(o(c.pop()).compareTo(o(c.pop())) < 0)));
+        add(">=", c -> c.push(b(o(c.pop()).compareTo(o(c.pop())) <= 0)));
+        add("+", c -> c.push(i(i(c.pop()) + i(c.pop()))));
+        add("-", c -> c.push(i(-i(c.pop()) + i(c.pop()))));
+        add("*", c -> c.push(i(i(c.pop()) * i(c.pop()))));
+        add("/", c -> { int r = i(c.pop()); c.push(i(i(c.pop()) / r)); });
+        add("%", c -> { int r = i(c.pop()); c.push(i(i(c.pop()) % r)); });
         add("car", c -> c.push(((Cons)c.pop()).car));
         add("cdr", c -> c.push(((Cons)c.pop()).cdr));
         add("cons", c -> { Element r = c.pop(), l = c.pop(); c.push(Cons.of(l, (List)r)); });
@@ -212,8 +232,8 @@ public class Context {
         add("uncons", c -> { Cons e = (Cons)c.pop(); c.push(e.car); c.push(e.cdr); });
 //        add("nil", c -> c.push(List.NIL));
         add("quote", c -> c.push(Quote.of(c.pop())));
-        add("null?", c -> c.push(Bool.of(c.pop().equals(List.NIL))));
-        add("list?", c -> c.push(Bool.of(c.pop() instanceof List)));
+        add("null?", c -> c.push(b(c.pop().equals(List.NIL))));
+        add("list?", c -> c.push(b(c.pop() instanceof List)));
         add("append", c -> { List right = (List)c.pop(); c.push(List.append(c.pop(), right)); });
         add("reverse", c -> {
             List list = (List)c.pop();
@@ -241,12 +261,12 @@ public class Context {
                 throw new RuntimeException("step == 0");
             else if (step > 0)
                 for (int i = start; i <= end; i += step) {
-                    c.push(Int.of(i));
+                    c.push(i(i));
                     c.execute(closure);
                 }
             else
                 for (int i = start; i >= end; i += step) {
-                    c.push(Int.of(i));
+                    c.push(i(i));
                     c.execute(closure);
                 }
         });
@@ -257,14 +277,14 @@ public class Context {
         add("array", c -> c.push(Array.of(((Int)c.pop()).value)));
         add("at", c -> { Collection x = (Collection)c.pop(); int i = ((Int)c.pop()).value; c.push(x.at(i)); });
         add("put", c -> { Collection x = (Collection)c.pop(); Element e = c.pop(), i = c.pop(); x.put(i, e); });
-        add("size", c -> { Collection x = (Collection)c.pop(); c.push(Int.of(x.size())); });
+        add("size", c -> { Collection x = (Collection)c.pop(); c.push(i(x.size())); });
         add("L-A", c -> {
             List list = (List)c.pop();
             int length = list.size();
             Array array = Array.of(length);
             int i = 1;
             for (Element e : list)
-                array.put(Int.of(i++), e);
+                array.put(i(i++), e);
             c.push(array);
         });
         add("A-L", c -> c.push(List.of(((Array)c.pop()).array)));
