@@ -140,7 +140,7 @@ public class Context {
     static RuntimeException error(ClassCastException ex, Element e) {
         Matcher m = CLASS_CAST_EXCEPTION.matcher(ex.getMessage());
         if (m.find())
-            return new RuntimeException("Cast error %s to %s at %s"
+            return new RuntimeException("Cast error %s to %s at '%s'"
                 .formatted(m.group(1), m.group(2), e), ex);
         else
             return new RuntimeException(ex);
@@ -278,6 +278,8 @@ public class Context {
             c.push(array);
         });
         add("A-L", c -> c.push(List.of(((Array)c.pop()).array)));
+        add("generator", c -> c.push(Generator.of(c.child(), (Collection)c.pop())));
+        add("yield", Generator.YIELD);
     }
 
 }
