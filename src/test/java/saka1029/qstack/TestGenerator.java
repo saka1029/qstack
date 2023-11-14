@@ -9,6 +9,6 @@ public class TestGenerator {
     @Test
     public void testGenerator() {
         Context c = Context.of(10);
-        assertEquals(Int.of(6), c.eval("0 '(1 yield 2 yield 3 yield) generator '+ foreach"));
+        assertEquals(Int.of(6), c.eval("0 '(1 yield 2 yield 3 yield) generator '+ for"));
     }
 }

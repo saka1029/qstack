@@ -27,7 +27,7 @@ public class TestQstack {
     @Test
     public void testFactByFor() {
         Context c = Context.of(10);
-        c.run("'(1 swap 1 swap 1 '* for) 'fact define");
+        c.run("'(1 swap 1 swap 1 range '* for) 'fact define");
         assertEquals(c.eval("1"), c.eval("0 fact"));
         assertEquals(c.eval("1"), c.eval("1 fact"));
         assertEquals(c.eval("2"), c.eval("2 fact"));
@@ -58,7 +58,7 @@ public class TestQstack {
     @Test
     public void testReverseByForeach() {
         Context c = Context.of(10);
-        c.run("'('() swap 'rcons foreach) 'my-reverse define");
+        c.run("'('() swap 'rcons for) 'my-reverse define");
         assertEquals(c.eval("'()"), c.eval("'() my-reverse"));
         assertEquals(c.eval("'(1)"), c.eval("'(1) my-reverse"));
         assertEquals(c.eval("'(2 1)"), c.eval("'(1 2) my-reverse"));
@@ -177,12 +177,12 @@ public class TestQstack {
      * (0 1 2 3) (2 % 0 ==) : swap
      * (2 % 0 ==) (0 1 2 3) : '()
      * (2 % 0 ==) (0 1 2 3) ()  : swap
-     * (2 % 0 ==) () (0 1 2 3) : '(@0 @3 execute 'rcons 'drop if) foreach
+     * (2 % 0 ==) () (0 1 2 3) : '(@0 @3 execute 'rcons 'drop if) for
      */
     @Test
     public void testFilterByForeachAndReverse() {
         Context c = Context.of(20);
-        c.run("'(swap '() swap '(@0 @3 execute 'rcons 'drop if) foreach ^1 reverse) 'filter define");
+        c.run("'(swap '() swap '(@0 @3 execute 'rcons 'drop if) for ^1 reverse) 'filter define");
         assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
         assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
     }
@@ -210,9 +210,9 @@ public class TestQstack {
     @Test
     public void testFilterByCompound() {
         Context c = Context.of(20); //.trace(logger::info);
-//        c.run("'('() swap 'rcons foreach) 'reverse define");
+//        c.run("'('() swap 'rcons for) 'reverse define");
         c.run("'('(execute 'rcons 'drop if) cons '@0 rcons) 'filter-predicate define");
-        c.run("'(filter-predicate '() rrot foreach reverse) 'filter define");
+        c.run("'(filter-predicate '() rrot for reverse) 'filter define");
         assertEquals(c.eval("'(0 2)"), c.eval("'(0 1 2 3) '(2 % 0 ==) filter"));
         assertEquals(c.eval("'(1 3)"), c.eval("'(0 1 2 3) '(2 % 0 !=) filter"));
     }
@@ -250,9 +250,9 @@ public class TestQstack {
     @Test
     public void testIota() {
         Context c = Context.of(10);
-        c.run("'('() swap 1 -1 'rcons for) 'iota define");
+        c.run("'('() swap 1 -1 range 'rcons for) 'iota define");
         assertEquals(c.eval("'(1 2 3 4)"), c.eval("4 iota"));
-        c.run("'(1 swap iota '* foreach) 'fact define");
+        c.run("'(1 swap iota '* for) 'fact define");
        assertEquals(c.eval("1"), c.eval("0 fact")); 
        assertEquals(c.eval("1"), c.eval("1 fact")); 
        assertEquals(c.eval("6"), c.eval("3 fact")); 
@@ -262,7 +262,7 @@ public class TestQstack {
     @Test
     public void testFibonacciByFor() {
         Context c = Context.of(10);
-        c.run("'(0 swap 1 swap 1 swap 1 '(drop @1 @1 + rot drop) for drop) 'fibonacci define");
+        c.run("'(0 swap 1 swap 1 swap 1 range '(drop @1 @1 + rot drop) for drop) 'fibonacci define");
         assertEquals(c.eval("0"), c.eval("0 fibonacci"));
         assertEquals(c.eval("1"), c.eval("1 fibonacci"));
         assertEquals(c.eval("1"), c.eval("2 fibonacci"));
@@ -345,9 +345,9 @@ public class TestQstack {
     @Test
     public void testSieveOfEratosthenes() {
         Context c = Context.of(6).output(logger::info);
-        c.run("'(@0 2 * @2 size rot '(true @2 put) for) 'sieve-of-eratosthenes define");
-        c.run("'('() 2 @2 size 1 '(@0 @3 at 'drop 'rcons if) for reverse ^1) 'array-to-list define");
-        c.run("'(@0 array swap 2 swap 1 '(sieve-of-eratosthenes) for array-to-list) 'primes define");
+        c.run("'(@0 2 * @2 size rot range '(true @2 put) for) 'sieve-of-eratosthenes define");
+        c.run("'('() 2 @2 size 1 range '(@0 @3 at 'drop 'rcons if) for reverse ^1) 'array-to-list define");
+        c.run("'(@0 array swap 2 swap 1 range '(sieve-of-eratosthenes) for array-to-list) 'primes define");
         assertEquals(c.eval("'(2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97)"),
             c.eval("100 primes"));
     }
@@ -404,7 +404,7 @@ public class TestQstack {
      * </pre>
      * (1 2) () perm
      * (1 2) () : @1
-     * (1 2) () (1 2) : (...) foreach
+     * (1 2) () (1 2) : (...) for
      * (1 2) () 1 : @0
      * (1 2) () 1 1 : @3
      * (1 2) () 1 1 (1 2) : remove
@@ -418,7 +418,7 @@ public class TestQstack {
         StringBuilder sb = new StringBuilder();
         Context c = Context.of(50).output(sb::append); // .trace(logger::info);
         c.run("'(@0 null? '^1 '(uncons @2 swap remove rot @2 == '^1 'cons if) if) 'remove define");
-        c.run("'(@1 null? '(@0 reverse print) '(@1 '(@0 @3 remove swap @2 cons perm) foreach) if drop2) 'perm define");
+        c.run("'(@1 null? '(@0 reverse print) '(@1 '(@0 @3 remove swap @2 cons perm) for) if drop2) 'perm define");
         c.run("'('() perm) 'permutations define");
         sb.setLength(0);
         c.run("'() permutations");

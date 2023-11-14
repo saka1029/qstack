@@ -257,28 +257,12 @@ public class Context {
             execute(((Bool)c.pop()).value ? then : orElse);
         });
         add("define", c -> globals.put((Symbol)c.pop(), c.pop()));
-        add("foreach", c -> {
+        add("for", c -> {
             Element body = c.pop();
             for (Element e : (Collection)c.pop()) {
                 c.push(e);
                 c.execute(body);
             }
-        });
-        add("for", c -> {
-            Element closure = c.pop();
-            int step = ((Int)c.pop()).value, end = ((Int)c.pop()).value, start = ((Int)c.pop()).value;
-            if (step == 0)
-                throw new RuntimeException("step == 0");
-            else if (step > 0)
-                for (int i = start; i <= end; i += step) {
-                    c.push(i(i));
-                    c.execute(closure);
-                }
-            else
-                for (int i = start; i >= end; i += step) {
-                    c.push(i(i));
-                    c.execute(closure);
-                }
         });
         add("stack", c -> output(c.toString()));
         add("print", c -> output("" + c.pop()));

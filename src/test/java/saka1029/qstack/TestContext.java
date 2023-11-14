@@ -215,7 +215,7 @@ public class TestContext {
     @Test
     public void testArray() {
         Context c = Context.of(5).output(logger::info);
-        c.run("5 array 1 5 1 '(@0 @2 put) for");
+        c.run("5 array 1 5 1 range '(@0 @2 put) for");
         assertEquals(c.eval("5"), c.eval("@0 size"));
         assertEquals(c.eval("1"), c.eval("1 @1 at"));
         assertEquals(c.eval("2"), c.eval("2 @1 at"));
