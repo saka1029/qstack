@@ -5,13 +5,6 @@ import java.util.NoSuchElementException;
 
 public class Generator implements Value, Collection {
 
-    static final Value YIELD = new Value() {
-        @Override
-        public String toString() {
-            return "yield";
-        }
-    };
-
     final Collection codes;
     final Context context;
     
@@ -31,7 +24,7 @@ public class Generator implements Value, Collection {
         Element advance() {
             while (codes.hasNext()) {
                 context.execute(codes.next());
-                if (context.sp >= 2 && context.peek(0) == YIELD) {
+                if (context.sp >= 2 && context.peek(0) == Context.YIELD) {
                     context.drop(); // drop YIELD
                     return context.pop();
                 }
@@ -72,6 +65,11 @@ public class Generator implements Value, Collection {
     @Override
     public int size() {
         throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public String toString() {
+        return "Generator%s".formatted(codes);
     }
 
 }

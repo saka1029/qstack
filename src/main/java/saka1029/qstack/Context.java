@@ -14,6 +14,12 @@ import saka1029.Common;
 public class Context {
     
     static final Logger logger = Common.logger(Context.class);
+    static final Value YIELD = new Value() {
+        @Override
+        public String toString() {
+            return "yield";
+        }
+    };
 
     public final Element[] stack;
     public int sp = 0, nest = 0;
@@ -283,7 +289,7 @@ public class Context {
         });
         add("A-L", c -> c.push(List.of(((Array)c.pop()).array)));
         add("generator", c -> c.push(Generator.of(c.child(), (Collection)c.pop())));
-        add("yield", Generator.YIELD);
+        add("yield", YIELD);
         add("range", c -> {
             int step = i(c.pop()), end = i(c.pop()), start = i(c.pop());
             c.push(Range.of(start, end, step));
