@@ -386,6 +386,7 @@ public class TestQstack {
         assertEquals(c.eval("'(2 3)"), c.eval("1 '(1 2 3) remove"));
         assertEquals(c.eval("'(1 3)"), c.eval("2 '(1 2 3) remove"));
         assertEquals(c.eval("'(1 2)"), c.eval("3 '(1 2 3) remove"));
+        assertEquals(c.eval("'(1 2)"), c.eval("3 '(1 2 3 3 3 3) remove"));
         assertEquals(c.eval("'(1 2 3)"), c.eval("4 '(1 2 3) remove"));
     }
     
